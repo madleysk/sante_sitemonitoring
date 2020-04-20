@@ -1,0 +1,277 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<style>
+	.up { background-color: ; color: ; }
+	.down { background-color: #FFFFFF; color: #FF0000 }
+	.togle-case { text-transform: capitalize;}
+</style>
+<!-- Content Header (Page header) -->
+    <section class="content-header">
+      
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-md-4">
+          <!-- DONUT CHART -->
+          <div class="card">
+            <div class="card-title">
+              <h3 class="text-center">Internet status</h3>
+            </div>
+            <div class="card-body">
+              <canvas id="pieChartInt" style="height:250px"></canvas>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col (RIGHT) -->
+        <div class="col-md-4">
+          <!-- DONUT CHART -->
+          <div class="card">
+            <div class="card-title">
+              <h3 class="text-center">Isante status</h3>
+            </div>
+            <div class="card-body">
+              <canvas id="pieChartIsante" style="height:250px"></canvas>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col (RIGHT) -->
+        <div class="col-md-4">
+          <!-- DONUT CHART -->
+          <div class="card">
+            <div class="card-title">
+              <h3 class="text-center">Fingerprint status</h3>
+            </div>
+            <div class="card-body">
+              <canvas id="pieChartFing" style="height:250px"></canvas>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+        </div>
+        <!-- /.col (RIGHT) -->
+      </div>
+      <!-- /.row -->
+	<div class="row mt-3 mb-3">
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-title bg-danger"><h4 class="text-center" style="color:white;">Evenements recents</h4></div>
+				<div class="card-body table-responsive">
+					<table class="table table-hovered">
+						<caption>Derniere mise a jour: 20 Avril 2020 10:56</caption>
+						{% for event in data['recent_events'] %}
+						<tr class="{{event.status_ev}} togle-case"><td>{{event.element}} {{event.status_ev}}</td><td>{{event.nom_site}}</td><td>{{event.date_entree}}</td></tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-4">
+			<div class="card">
+				<div class="card-title bg-danger"><h4 class="text-center" style="color:white;">Top 5 sites a problemes</h4></div>
+				<div class="card-body table-responsive">
+					<table class="table table-hovered">
+						<caption>Derniere mise a jour: 20 Avril 2020 10:56</caption>
+						{% for bad_site in data['top_bad_sites'] %}
+						<tr><td>{{bad_site.nom}}</td></tr>
+						{% endfor %}
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-3" style="margin:auto;">
+			<select name="filter" class="form-control" onchange="filter(this)">
+				<option value="all">-- Filtrage --</option>
+				<option value="centre" {% if filtering == 'centre'%} selected {% endif %}>Region Centre</option>
+				<option value="nord" {% if filtering == 'nord'%} selected {% endif %}>Region Nord</option>
+				<option value="sud" {% if filtering == 'sud'%} selected {% endif %}>Region Sud</option>
+			</select>
+		</div>
+	</div>
+	
+    </section>
+    
+    <!-- jQuery 3 -->
+<script src="{{url_for('static', filename='bower_components/jquery/dist/jquery.min.js')}}"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="{{url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+<!-- ChartJS -->
+<script src="{{url_for('static', filename='bower_components/chart.js/Chart.js')}}"></script>
+<!-- FastClick -->
+<script src="{{url_for('static', filename='bower_components/fastclick/lib/fastclick.js')}}"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../../dist/js/demo.js"></script>
+<!-- page script -->
+<script>
+	//Filter script
+	function filter(obj){
+		var current_url= "{{url_for('index')}}";
+		var val= obj.value;
+		window.location.replace(current_url+'?filter='+val);
+	}
+	//Chart script
+  $(function () {
+    /* ChartJS
+     * -------
+     * Here we will create a few charts using ChartJS
+     */
+
+    //-------------
+    //- PIE CHART - Internet
+    //-------------
+    // Get context with jQuery - using jQuery's .get() method.
+    var pieChartCanvas = $('#pieChartInt').get(0).getContext('2d')
+    var pieChartInt       = new Chart(pieChartCanvas)
+    var PieData        = [
+      {
+        value    : {{data['internet_status']['down']}},
+        color    : '#f56954',
+        highlight: '#f56954',
+        label    : 'Non conncte'
+      },
+      {
+        value    : {{data['internet_status']['up']}},
+        color    : '#00a65a',
+        highlight: '#00a65a',
+        label    : 'Internet Ok'
+      }
+      
+    ]
+    var pieOptions     = {
+      //Boolean - Whether we should show a stroke on each segment
+      segmentShowStroke    : true,
+      //String - The colour of each segment stroke
+      segmentStrokeColor   : '#fff',
+      //Number - The width of each segment stroke
+      segmentStrokeWidth   : 2,
+      //Number - The percentage of the chart that we cut out of the middle
+      percentageInnerCutout: 50, // This is 0 for Pie charts
+      //Number - Amount of animation steps
+      animationSteps       : 100,
+      //String - Animation easing effect
+      animationEasing      : 'easeOutBounce',
+      //Boolean - Whether we animate the rotation of the Doughnut
+      animateRotate        : true,
+      //Boolean - Whether we animate scaling the Doughnut from the centre
+      animateScale         : false,
+      //Boolean - whether to make the chart responsive to window resizing
+      responsive           : true,
+      // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+      maintainAspectRatio  : true,
+      //String - A legend template
+      legendTemplate       : '',
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    pieChartInt.Doughnut(PieData, pieOptions)
+	
+	
+	//-------------
+    //- PIE CHART - Isante
+    //-------------
+    // Get context with jQuery - using jQuery's .get() method.
+    var pieChartCanvas = $('#pieChartIsante').get(0).getContext('2d')
+    var pieChartIsante       = new Chart(pieChartCanvas)
+    var PieData        = [
+      {
+        value    : {{data['isante_status']['down']}},
+        color    : '#f56954',
+        highlight: '#f56954',
+        label    : 'Non Operationnel'
+      },
+      {
+        value    : {{data['isante_status']['up']}},
+        color    : '#00a65a',
+        highlight: '#00a65a',
+        label    : 'Operationnel'
+      }
+      
+    ]
+    var pieOptions     = {
+      //Boolean - Whether we should show a stroke on each segment
+      segmentShowStroke    : true,
+      //String - The colour of each segment stroke
+      segmentStrokeColor   : '#fff',
+      //Number - The width of each segment stroke
+      segmentStrokeWidth   : 2,
+      //Number - The percentage of the chart that we cut out of the middle
+      percentageInnerCutout: 50, // This is 0 for Pie charts
+      //Number - Amount of animation steps
+      animationSteps       : 100,
+      //String - Animation easing effect
+      animationEasing      : 'easeOutBounce',
+      //Boolean - Whether we animate the rotation of the Doughnut
+      animateRotate        : true,
+      //Boolean - Whether we animate scaling the Doughnut from the centre
+      animateScale         : false,
+      //Boolean - whether to make the chart responsive to window resizing
+      responsive           : true,
+      // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+      maintainAspectRatio  : true,
+      //String - A legend template
+      legendTemplate       : '',
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    pieChartIsante.Doughnut(PieData, pieOptions)
+    
+    //-------------
+    //- PIE CHART - Fingerprint
+    //-------------
+    // Get context with jQuery - using jQuery's .get() method.
+    var pieChartCanvas = $('#pieChartFing').get(0).getContext('2d')
+    var pieChartFing       = new Chart(pieChartCanvas)
+    var PieData        = [
+      {
+        value    : {{data['fingerprint_status']['down']}},
+        color    : '#f56954',
+        highlight: '#f56954',
+        label    : 'Non Operationnel'
+      },
+      {
+        value    : {{data['fingerprint_status']['up']}},
+        color    : '#00a65a',
+        highlight: '#00a65a',
+        label    : 'Operationnel'
+      }
+      
+    ]
+    var pieOptions     = {
+      //Boolean - Whether we should show a stroke on each segment
+      segmentShowStroke    : true,
+      //String - The colour of each segment stroke
+      segmentStrokeColor   : '#fff',
+      //Number - The width of each segment stroke
+      segmentStrokeWidth   : 2,
+      //Number - The percentage of the chart that we cut out of the middle
+      percentageInnerCutout: 50, // This is 0 for Pie charts
+      //Number - Amount of animation steps
+      animationSteps       : 100,
+      //String - Animation easing effect
+      animationEasing      : 'easeOutBounce',
+      //Boolean - Whether we animate the rotation of the Doughnut
+      animateRotate        : true,
+      //Boolean - Whether we animate scaling the Doughnut from the centre
+      animateScale         : false,
+      //Boolean - whether to make the chart responsive to window resizing
+      responsive           : true,
+      // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+      maintainAspectRatio  : true,
+      //String - A legend template
+      legendTemplate       : '',
+    }
+    //Create pie or douhnut chart
+    // You can switch between pie and douhnut using the method below.
+    pieChartFing.Doughnut(PieData, pieOptions)
+  })
+</script>
+
+{% endblock body %}

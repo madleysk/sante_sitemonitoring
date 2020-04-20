@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>{{ page_title }}</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Bootstrap 4.4.1 -->
+	<link rel="stylesheet" href="{{url_for('static', filename='bower_components/bootstrap/css/bootstrap.min.css')}}">
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="{{url_for('static', filename='bower_components/font-awesome/css/font-awesome.min.css')}}">
+	<!-- Ionicons -->
+	<link rel="stylesheet" href="{{url_for('static', filename='bower_components/Ionicons/css/ionicons.min.css')}}">
+	<!-- jvectormap -->
+	<link rel="stylesheet" href="{{url_for('static', filename='bower_components/jvectormap/jquery-jvectormap.css')}}">
+</head>
+<body>
+	<!-- Menu -->
+	<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+	  <a class="navbar-brand" href="{{url_for('index')}}">Sante - SM</a>
+	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	  </button>
+
+	  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+		  <li class="nav-item active">
+			<a class="nav-link" href="{{url_for('index')}}"><span class="fa fa-home">&nbsp;</span>Accueil <span class="sr-only">(current)</span></a>
+		  </li>
+		{% if session['auth_level'] and session['auth_level'] > 1 %}
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Evenement
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			  <a class="dropdown-item" href="{{url_for('add_event')}}">Nouvel Evenement</a>
+			</div>
+		</li>
+		{% endif %}
+		{% if session['auth_level'] == 9 %}
+		<li class="nav-item dropdown">
+			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+			Administration
+			</a>
+			<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+			  <a class="dropdown-item" href="{{url_for('list_events')}}">Liste evenements</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="{{url_for('add_employe')}}">Ajouter employe</a>
+			  <a class="dropdown-item" href="{{url_for('list_employes')}}">Lister employes</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="{{url_for('add_user')}}">Ajouter utilisateur</a>
+			  <a class="dropdown-item" href="{{url_for('list_users')}}">Lister utilisateurs</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="{{url_for('add_site')}}">Ajouter site</a>
+			  <a class="dropdown-item" href="{{url_for('list_sites')}}">Lister sites</a>
+			  <div class="dropdown-divider"></div>
+			  <a class="dropdown-item" href="">Configurer Dashbord</a>
+			</div>
+		</li>
+		{% endif %}
+		  <li class="nav-item">
+			<a class="nav-link" href="#">Contact</a>
+		  </li>
+		  <li class="nav-item">
+			<a class="nav-link" href="#" title="Foire aux questions" >FAQ</a>
+		  </li>
+		</ul>
+		<div class="pull-right">
+			{% if session['username'] %}
+			<span>Welcome, {{ session['username'] }} - </span>
+			<a href= {{ url_for('logout')}} >Deconnexion</a>
+			{% else %}
+			<a class="mr-2" href= {{ url_for('subscribe')}} ><span class="fa fa-user">&nbsp;</span>Inscription</a>
+			<a class="" href= {{ url_for('login')}} ><span class="fa fa-sign-in">&nbsp;</span>Connexion</a>
+			{% endif %}
+		</div>
+	  </div>
+	</nav>
+	<!-- End Menu -->
+	<!-- Headline -->
+		{% if headline %}
+	<div class="jumbotron text-center">
+			<h2>{{ headline }}</h2>
+	</div>
+		{% endif %}
+	<!-- End Headline -->
+	<div class="container" style="min-height:200px;">
+		
+		{% block headings %}
+		{% endblock headings %}
+		
+		{% block body %}
+		{% endblock body %}
+	</div>
+	<footer class="footer text-center mt-5">
+		<p class="pull-center">&copy; Projet Sante - 2020</p>
+	</footer>
+	<!-- jQuery 3 -->
+	<script src="{{url_for('static', filename='bower_components/jquery/dist/jquery.min.js')}}"></script>
+	<!-- Bootstrap 4.4.1 -->
+	<script src="{{url_for('static', filename='bower_components/bootstrap/js/bootstrap.min.js')}}"></script>
+	<!-- FastClick -->
+	<script src="{{url_for('static', filename='bower_components/fastclick/lib/fastclick.js')}}"></script>
+	<!-- Sparkline -->
+	<script src="{{url_for('static', filename='bower_components/jquery-sparkline/dist/jquery.sparkline.min.js')}}"></script>
+	<!-- jvectormap  -->
+	<script src="{{url_for('static', filename='plugins/jvectormap/jquery-jvectormap-1.2.2.min.js')}}"></script>
+	<script src="{{url_for('static', filename='plugins/jvectormap/jquery-jvectormap-world-mill-en.js')}}"></script>
+	<!-- SlimScroll -->
+	<script src="{{url_for('static', filename='bower_components/jquery-slimscroll/jquery.slimscroll.min.js')}}"></script>
+	<!-- ChartJS -->
+	<script src="{{url_for('static', filename='bower_components/chart.js/Chart.js')}}"></script>
+</body>
+</html>

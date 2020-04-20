@@ -1,0 +1,17 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<section class="content">
+	<div class="table-responsive">
+		<table class="table table-hovered">
+			<th>Code</th><th>Nom site</th><th>Region</th><th>Departement</th><th>Responsable</th><th>telephone</th>
+			{% if liste_sites %}
+				{% for site in liste_sites %}
+				<tr><td>{{site.code}}</td><td>{{site.nom}}</td><td>{{site.region}}</td><td>{{site.departement}}</td><td>{{site.pers_resp}}</td><td>{{site.tel}}</td></tr>
+				{% endfor %}
+			{% endif %}
+		</table>
+	</div>
+</section>
+{% endblock body %}
+

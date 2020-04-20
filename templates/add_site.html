@@ -1,0 +1,103 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<section class="content">
+	<form method="POST">	
+	<div class="row">
+		<div class="form-group col-md-6">
+			<label for="">Code</label>
+			<input type="text" name="code" class="form-control" placeholder="ex: HCR-01">
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Nom Site</label>
+			<input type="text" name="nom" class="form-control" placeholder="Nom du site">
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Sigle</label>
+			<input type="text" name="sigle" class="form-control" placeholder="Sigle represantant le site">
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Personne responsable</label>
+			<input type="text" name="pers_resp" class="form-control" placeholder="Nom et prenom">
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Bureau</label>
+			<select name="bureau_resp" class="form-control" required>
+				<option value="">Selectionner</option>
+				{% for bureau in data['liste_bureaux'] %}
+				<option value="{{bureau.code}}" >{{ bureau.code }}</option>
+				{% endfor %}
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">FAI</label>
+			<select name="fai" class="form-control" required>
+				<option value="">Selectionner</option>
+				<option value="none">N/A</option>
+				<option value="natcom">Natcom</option>
+				<option value="digicel">Digicel</option>
+				<option value="hainet">Hainet</option>
+				<option value="access">Access Haiti</option>
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Adresse</label>
+			<input type="text" name="adresse" class="form-control" placeholder="Adresse postal">
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Region</label>
+			<select name="region" class="form-control" required>
+				<option value="">Selectionner</option>
+				{% for region in data['liste_regions'] %}
+				<option value="{{region}}">{{region}}</option>
+				{% endfor%}
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Departement</label>
+			<select name="departement" class="form-control" required>
+				<option value="">Selectionner</option>
+				{% for dept in data['liste_depts'] %}
+				<option value="{{dept}}">{{dept}}</option>
+				{% endfor%}
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Telephone</label>
+			<input type="text" name="tel" class="form-control" placeholder="Telephone principal">
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Connection Internet</label>
+			<select name="internet" class="form-control" required>
+				<option value="">Selectionner</option>
+				<option value="up" selected>Up</option>
+				<option value="down">Down</option>
+				<option value="none">N/A</option>
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Serveur isante</label>
+			<select name="isante" class="form-control" required>
+				<option value="">Selectionner</option>
+				<option value="up" selected>Up</option>
+				<option value="down">Down</option>
+				<option value="none">N/A</option>
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<label for="">Serveur Fingerprint</label>
+			<select name="fingerprint" class="form-control" required>
+				<option value="">Selectionner</option>
+				<option value="up" selected>Up</option>
+				<option value="down">Down</option>
+				<option value="none">N/A</option>
+			</select>
+		</div>
+		<div class="form-group col-md-6">
+			<button type="submit" class="btn btn-primary pull-right">Ajouter</button>
+		</div>
+	</div>
+	</form>
+</section>
+{% endblock body %}
+
