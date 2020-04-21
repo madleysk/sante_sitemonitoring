@@ -8,70 +8,52 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
-class Bureau(db.Model):
-	__tablename__ = "bureaux"
-	id = db.Column(db.Integer, primary_key=True)
-	code = db.Column(db.String(10),unique=True,nullable=False)
-	pers_resp = db.Column(db.String(160),nullable=False)
-	fai = db.Column(db.String(20))
-	adresse = db.Column(db.String(160))
-	region = db.Column(db.String(20),nullable=False)
-	departement = db.Column(db.String(30),nullable=False)
-	tel = db.Column(db.String(15))
-	employes = db.relationship("Employe", backref="bureau_emp", lazy=True)
-	sites = db.relationship("Site", backref="bureau_site", lazy=True)
-    
-	def __init__(self,code,pers_resp,fai,adresse,region,departement,tel):
-		self.code=code
-		self.pers_resp=pers_resp
-		self.fai=fai
-		self.adresse=adresse
-		self.region=region
-		self.departement=departement
-		self.tel=tel
-		
-	def ajouter_employe(self,code,nom,prenom,email,poste,adresse,tel_perso,tel_travail):
-		new_employe = Employe(code,nom,prenom,email,poste,adresse,tel_perso,tel_travail,self.code)
-		db.session.add(new_employe)
-		db.session.commit()
-		
-	def ajouter_site(self,code,nom,sigle,pers_resp,fai,adresse,region,departement,tel,internet,isante,fingerprint):
-		new_site = Site(code,nom,sigle,pers_resp,self.code,fai,adresse,region,departement,tel,internet,isante,fingerprint)
-		db.session.add(new_site)
-		db.session.commit()
-
 
 class Site(db.Model):
 	__tablename__ = "sites"
 	id = db.Column(db.Integer, primary_key=True)
 	code = db.Column(db.String(10),unique=True,nullable=False)
-	nom = db.Column(db.String(100),unique=True,nullable=False)
-	sigle = db.Column(db.String(20),unique=True,nullable=False)
-	pers_resp = db.Column(db.String(100),nullable=False)
-	bureau_resp = db.Column(db.String(10), db.ForeignKey("bureaux.code"))
-	fai = db.Column(db.String(20))
-	adresse = db.Column(db.String(160))
+	type_site = db.Column(db.String(10),nullable=False)
+	nom = db.Column(db.String(100),nullable=False)
+	sigle = db.Column(db.String(20),nullable=True)
 	region = db.Column(db.String(20),nullable=False)
 	departement = db.Column(db.String(30),nullable=False)
-	tel = db.Column(db.String(15))
+	commune = db.Column(db.String(30),nullable=False)
+	adresse = db.Column(db.String(160))
+	pepfar = db.Column(db.String(5))
+	contact_1 = db.Column(db.String(100))
+	tel_1 = db.Column(db.String(15))
+	contact_2 = db.Column(db.String(100))
+	tel_2 = db.Column(db.String(15))
+	fai = db.Column(db.String(20))
 	internet = db.Column(db.String(5))
 	isante = db.Column(db.String(5))
 	fingerprint = db.Column(db.String(5))
+	employes = db.relationship("Employe", backref="bureau_emp", lazy=True)
     
-	def __init__(self,code,nom,sigle,pers_resp,bureau_resp,fai,adresse,region,departement,tel,internet,isante,fingerprint):
+	def __init__(self,code,type_site,nom,sigle,region,departement,commune,adresse,pepfar,contact_1,tel_1,contact_2,tel_2,fai,internet,isante,fingerprint):
 		self.code=code
+		self.type_site=type_site
 		self.nom=nom
 		self.sigle=sigle
-		self.pers_resp=pers_resp
-		self.bureau_resp=bureau_resp
-		self.fai=fai
-		self.adresse=adresse
 		self.region=region
 		self.departement=departement
-		self.tel=tel
+		self.commune=commune
+		self.adresse=adresse
+		self.pepfar=pepfar
+		self.contact_1=contact_1
+		self.tel_1=tel_1
+		self.contact_2=contact_2
+		self.tel_2=tel_2
+		self.fai=fai
 		self.internet=internet
 		self.isante=isante
 		self.fingerprint=fingerprint
+		
+	def ajouter_employe(self,code_emp,nom,prenom,email,poste,adresse,tel_perso,tel_travail):
+		new_employe = Employe(code_emp,nom,prenom,email,poste,adresse,tel_perso,tel_travail,self.code)
+		db.session.add(new_employe)
+		db.session.commit()
 		
 
 class Poste(db.Model):
@@ -91,7 +73,7 @@ class Poste(db.Model):
 class Employe(db.Model):
 	__tablename__ = "employes"
 	id = db.Column(db.Integer, primary_key=True)
-	code = db.Column(db.String(10),unique=True,nullable=False)
+	code_emp = db.Column(db.String(10),unique=True,nullable=False)
 	nom = db.Column(db.String(160))
 	prenom = db.Column(db.String(160))
 	email = db.Column(db.String(200),unique=True,nullable=False)
@@ -99,10 +81,10 @@ class Employe(db.Model):
 	adresse = db.Column(db.String(160))
 	tel_perso = db.Column(db.String(15))
 	tel_travail = db.Column(db.String(15))
-	bureau_affecte = db.Column(db.String(10), db.ForeignKey("bureaux.code"))
+	bureau_affecte = db.Column(db.String(10), db.ForeignKey("sites.code"))
 
-	def __init__(self,code,nom,prenom,email,poste,adresse,tel_perso,tel_travail,bureau_affecte):
-		self.code=code
+	def __init__(self,code_emp,nom,prenom,email,poste,adresse,tel_perso,tel_travail,bureau_affecte):
+		self.code_emp=code_emp
 		self.nom = nom
 		self.prenom = prenom
 		self.email = email
@@ -128,7 +110,7 @@ class Users(db.Model):
 	username = db.Column(db.String(40),unique=True,nullable = False)
 	passwd = db.Column(db.String(256),nullable = False)
 	auth_level = db.Column(db.Integer,db.ForeignKey("roles.auth_level"),nullable = False)
-	code = db.Column(db.String(10),db.ForeignKey("employes.code"),nullable= False)
+	code = db.Column(db.String(10),db.ForeignKey("employes.code_emp"),nullable= False)
 
 	def __init__(self,username,passwd,auth_level,code):
 		self.username = username
@@ -151,7 +133,7 @@ class Evenement(db.Model):
 	code_site = db.Column(db.String(10),db.ForeignKey("sites.code"),nullable=False)
 	entite_concerne = db.Column(db.String(15),nullable = False) # internet, isante or fingerprint
 	status_ev = db.Column(db.String(10),nullable = False) # up, down, none
-	src_ev = db.Column(db.Integer,db.ForeignKey("source_ev.id"),nullable = False)
+	raison_ev = db.Column(db.String(100))
 	date_ev = db.Column(db.DateTime,nullable = False)
 	date_rap = db.Column(db.DateTime,nullable = False)
 	date_entree = db.Column(db.DateTime,nullable = False, default=datetime.utcnow)
@@ -159,11 +141,11 @@ class Evenement(db.Model):
 	remarques = db.Column(db.String(100),nullable = False)
 	code_utilisateur = db.Column(db.String(10),db.ForeignKey("users.code"),nullable = False)
 
-	def __init__(self,code_site,entite_concerne,status_ev,src_ev,date_ev,date_rap,date_entree,pers_contact,remarques,code_utilisateur):
+	def __init__(self,code_site,entite_concerne,status_ev,date_ev,raison_ev,date_rap,pers_contact,remarques,date_entree,code_utilisateur):
 		self.code_site=code_site
 		self.entite_concerne=entite_concerne
 		self.status_ev=status_ev
-		self.src_ev=src_ev
+		self.raison_ev=raison_ev
 		self.date_ev=date_ev
 		self.date_rap=date_rap
 		self.date_entree=date_entree
@@ -196,16 +178,12 @@ def initDb():
 	for poste in liste_poste:
 		db.session.add(Poste(poste['nom_poste'],poste['categorie_poste'],poste['domaine_poste'],poste['dept']))
 	db.session.commit()
-	# Table Bureaux
-	bureau1 = Bureau('PAP-OF01','Nathaniel Segaren','Natcom','Turgeau','Centre','Ouest','5090')
-	db.session.add(bureau1)
-	db.session.commit()
 	# Table Sites
-	site1 = Site('H-01','Hopital Communaute Haitienne','HCH','Jean Mackenson Louis','PAP-OF01','Digicel','Route de Freres','Centre','Ouest','50901','up','up','up')
+	site1 = Site("OF-01","bureau","Bureau de PAP","","CENTRE","Ouest","Port-au-Prince","Turgeau","Oui","Emmanuel Meleance","3757-0844","","","","up","none","none")
 	db.session.add(site1)
 	db.session.commit()
 	# Table employes
-	employe = Employe('1001','Meite','Madley Sk.','madley.meite@carisfoundationintl.org','03','Cayes','509000','50900','PAP-OF01')
+	employe = Employe('1001','Meite','Madley Sk.','madley.meite@carisfoundationintl.org','03','Cayes','509000','50900','OF-01')
 	db.session.add(employe)
 	db.session.commit()
 	# Table users

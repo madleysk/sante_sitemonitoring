@@ -13,7 +13,7 @@
 			<th>Evenement</th><th>Site</th><th>FAI</th><th>Departement</th><th>Region</th><th>Date Evenement</th>
 			{% if liste_events %}
 				{% for event in liste_events %}
-					<tr class="{{event.status_ev}} togle-case"><td>{{ event.entite_concerne }} {{ event.status_ev }}</td><td>{{ event.code_site }}</td><td>{{ event.fai }}</td><td>{{ event.departement }}</td><td>{{ event.region }}</td><td>{{ event.date_ev }}</td></tr>
+					<tr class="{{event.status_ev}} togle-case"><td>{{ event.entite_concerne }} {{ event.status_ev }}</td><td>{{ event.nom_site }}</td><td>{{ event.fai }}</td><td>{{ event.departement }}</td><td>{{ event.region }}</td><td>{{ event.date_ev }}</td></tr>
 				{% endfor %}
 			{% endif %}
 		</table>

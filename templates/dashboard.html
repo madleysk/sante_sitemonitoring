@@ -65,8 +65,9 @@
 				<div class="card-body table-responsive">
 					<table class="table table-hovered">
 						<caption>Derniere mise a jour: 20 Avril 2020 10:56</caption>
+						<th>Status</th><th>Site</th><th>date rapporte</th>
 						{% for event in data['recent_events'] %}
-						<tr class="{{event.status_ev}} togle-case"><td>{{event.element}} {{event.status_ev}}</td><td>{{event.nom_site}}</td><td>{{event.date_entree}}</td></tr>
+						<tr class="{{event.status_ev}} togle-case"><td>{{event.element}} {{event.status_ev}}</td><td>{{event.nom_site}}</td><td>{{event.date_rap}}</td></tr>
 						{% endfor %}
 					</table>
 				</div>
@@ -78,6 +79,7 @@
 				<div class="card-body table-responsive">
 					<table class="table table-hovered">
 						<caption>Derniere mise a jour: 20 Avril 2020 10:56</caption>
+						<th class="text-center">Nom site</th>
 						{% for bad_site in data['top_bad_sites'] %}
 						<tr><td>{{bad_site.nom}}</td></tr>
 						{% endfor %}

@@ -19,6 +19,9 @@ def index():
 	page_title = 'Dashboard'
 	#db.drop_all()
 	#initDb()
+	#import_csv_ev("liste_sites.csv",'Site')
+	#session['ucode']='1001'
+	#import_csv_ev("complete_event_list.csv",'Evenement')
 	filtering = request.args.get('filter')
 	data = {}
 	data['internet_status'] = {"up":Site.query.filter_by(internet ='up').count(),"down":Site.query.filter_by(internet = 'down').count()}
@@ -29,12 +32,10 @@ def index():
 	for site in top_bad_sites:
 		list_bad.append(Site.query.filter_by(code=site.code_site).first())
 	#data['recent_events']= Evenement.query.order_by(Evenement.date_entree.desc()).limit(5)
-	data['recent_events']= db.engine.execute('SELECT entite_concerne as element, status_ev,nom as nom_site,date_entree FROM evenements, sites WHERE evenements.code_site=sites.code ORDER BY date_entree DESC LIMIT 5')
+	data['recent_events']= db.engine.execute('SELECT entite_concerne as element, status_ev,nom as nom_site,date_rap FROM evenements, sites WHERE evenements.code_site=sites.code ORDER BY date_rap DESC LIMIT 5')
 	data['top_bad_sites']= list_bad
-	#import_csv_ev("bureaux.csv",'Bureau')
-	#import_csv_ev("sites.csv",'Site')
-	#import_csv_ev("evenements.csv",'Evenement')
 	return render_template('dashboard.html', page_title=page_title,filtering=filtering,data=data)
+
 
 @app.route('/subscribe')
 def subscribe():
@@ -148,7 +149,7 @@ def add_event():
 def list_events():
 	page_title = 'Liste evenements'
 	#liste_events= Evenement.query.order_by(Evenement.date_entree.desc()).limit(25)
-	liste_events = Evenement.query.order_by(Evenement.date_entree.desc()).paginate(per_page=25).items
+	liste_events = db.engine.execute("SELECT entite_concerne,status_ev,code_site,nom as nom_site,fai,departement,region,date_ev FROM evenements,sites WHERE evenements.code_site=sites.code Limit 20")
 	pagination = Evenement.query.order_by(Evenement.date_entree.desc()).paginate(per_page=25)
 	return render_template("list_events.html",page_title=page_title,liste_events=liste_events,pagination=pagination)
 
@@ -203,36 +204,17 @@ def import_csv_ev(fichier,nom_classe):
 		# importing csv file
 		if nom_classe == 'Evenement':
 			for evenement in lignes_contenu:
-				code_site= evenement[0]
-				entite_concerne= evenement[1]
-				status_ev= evenement[2]
-				src_ev= evenement[3]
-				date_ev= evenement[4]
-				date_rap= evenement[5]
 				date_entree= datetime.now()
-				pers_contact= evenement[7]
-				remarques= evenement[8]
 				code_utilisateur= session['ucode']
-				print(code_site,entite_concerne,status_ev,src_ev,date_ev,date_rap,date_entree,pers_contact,remarques,code_utilisateur)
-				db.session.add(Evenement(code_site,entite_concerne,status_ev,src_ev,date_ev,date_rap,date_entree,pers_contact,remarques,code_utilisateur))
-				db.session.commit()
+				#date_ev=evenement[4]
+				#date_rap=evenement[6]
+				db.session.add(Evenement(code_site=evenement[0],entite_concerne=evenement[2].lower(),status_ev=evenement[3].lower(),date_ev=evenement[4],raison_ev=evenement[5],date_rap=evenement[6],pers_contact=evenement[7],remarques=evenement[8],date_entree=date_entree,code_utilisateur=code_utilisateur))
+			db.session.commit()
 		if nom_classe == 'Site':
 			for site in lignes_contenu:
-				code= site[0]
-				nom= site[1]
-				sigle= site[2]
-				pers_resp= site[3]
-				bureau_resp= site[4]
-				fai= site[5]
-				adresse= site[6]
-				region= site[7]
-				departement= site[8]
-				tel= site[9]
-				internet= site[10]
-				isante= site[11]
-				fingerprint= site[12]
-				db.session.add(Site(code,nom,sigle,pers_resp,bureau_resp,fai,adresse,region,departement,tel,internet,isante,fingerprint))
-				db.session.commit()
+				print(len(site))
+				db.session.add(Site(code=site[0],type_site=site[1],nom=site[2],sigle='',region=site[3],departement=site[4],commune=site[5],adresse='',pepfar=site[6],contact_1=site[7],tel_1=site[8],contact_2=site[9],tel_2=site[10],fai=site[11],internet=site[12],isante=site[13],fingerprint=site[14]))
+			db.session.commit()
 		if nom_classe == 'Bureau':
 			for bureau in lignes_contenu:
 				db.session.add(Bureau(code=bureau[0],pers_resp=bureau[1],fai=bureau[2],adresse=bureau[3],region=bureau[4],departement=bureau[5],tel=bureau[6]))
@@ -240,7 +222,7 @@ def import_csv_ev(fichier,nom_classe):
 		if nom_classe == 'Employe':
 			for employe in lignes_contenu:
 				db.session.add(Employe(code=employe[0],nom=employe[1],prenom=employe[2],email=employe[3],poste=employe[4],adresse=employe[5],tel_perso=employe[6],tel_travail=employe[7],bureau_affecte=employe[8]))
-				db.session.commit()
+			db.session.commit()
 
 if __name__ == '__main__':
 	app.run(debug = True)
