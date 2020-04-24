@@ -13,7 +13,7 @@ class SiteForm(Form):
 	type_site= SelectField(u'Type',choices=[('site','Site'),('bureau','Bureau')])
 	nom= StringField('Titre Site',[validators.Length(min=4,max=30)])
 	sigle= StringField('Sigle')
-	region= SelectField(u'Region',choices=[('centre','Centre'),('sud','Sud'),('nord','Nord')])
+	region= SelectField(u'Region',choices=[('CENTRE','Centre'),('SUD','Sud'),('NORD','Nord')])
 	departement= SelectField(u'Departement',choices=[('ouest','Ouest'),('sud','Sud'),('centre','Centre'),('sud-est','Sud-Est'),('nippes','Nippes')])
 	commune= StringField('Commune',[validators.Length(min=4,max=30)])
 	adresse= StringField('Adresse',[validators.Length(min=4,max=30)])

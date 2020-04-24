@@ -2,6 +2,7 @@ python3 -m venv venv
 . venv/bin/activate
 pip install Flask
 pip install flask-sqlalchemy
+pip install flask-login
 pip install mysql
 export FLASK_APP=application.py
 export FLASK_ENV=development

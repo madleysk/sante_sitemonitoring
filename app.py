@@ -23,20 +23,34 @@ def index():
 	#import_csv_ev("liste_sites.csv",'Site')
 	#session['ucode']='1001'
 	#import_csv_ev("complete_event_list.csv",'Evenement')
-	filtering = request.args.get('filter')
 	data = {}
-	data['internet_status'] = {"up":Site.query.filter_by(internet ='up').count(),"down":Site.query.filter_by(internet = 'down').count()}
-	data['isante_status'] = {"up":Site.query.filter_by(isante ='up').count(),"down":Site.query.filter_by(isante = 'down').count()}
-	data['fingerprint_status'] = {"up":Site.query.filter_by(fingerprint ='up').count(),"down":Site.query.filter_by(fingerprint = 'down').count()}
-	top_bad_sites = db.engine.execute('SELECT code_site, count(*) as qte from evenements WHERE status_ev="down" group by code_site order by qte DESC Limit 5;')
-	list_bad =[]
-	for site in top_bad_sites:
-		list_bad.append(Site.query.filter_by(code=site.code_site).first())
-	#data['recent_events']= Evenement.query.order_by(Evenement.date_entree.desc()).limit(5)
-	data['recent_events']= db.engine.execute('SELECT entite_concerne as element, status_ev,nom as nom_site,date_rap FROM evenements, sites WHERE evenements.code_site=sites.code ORDER BY date_rap DESC LIMIT 5')
-	data['top_bad_sites']= list_bad
-	flash('Flashing test')
-	return render_template('dashboard.html', page_title=page_title,filtering=filtering,data=data)
+	filtre = request.args.get('filter')
+	if filtre != None and filtre != 'all':
+		data['internet_status'] = {"up":Site.query.filter_by(internet ='up',region=filtre).count(),"down":Site.query.filter_by(internet = 'down').count()}
+		data['isante_status'] = {"up":Site.query.filter_by(isante ='up',region=filtre).count(),"down":Site.query.filter_by(isante = 'down').count()}
+		data['fingerprint_status'] = {"up":Site.query.filter_by(fingerprint ='up',region=filtre).count(),"down":Site.query.filter_by(fingerprint = 'down').count()}
+		data['recent_events'] = Evenement.query.join(Site, Evenement.code_site==Site.code)\
+		.filter_by(region=filtre)\
+		.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.date_rap,Site.nom)\
+		.order_by(Evenement.date_rap.desc()).limit(5)
+		data['top_bad_sites'] = db.session.query( Evenement.code_site.label('code_site'),func.count(Evenement.code_site).label('qte'), Site.nom.label('nom_site'))\
+		.filter_by(status_ev='down')\
+		.join(Site, Evenement.code_site==Site.code)\
+		.filter_by(region=filtre)\
+		.group_by(Evenement.code_site).limit(5)
+	else:
+		data['internet_status'] = {"up":Site.query.filter_by(internet ='up').count(),"down":Site.query.filter_by(internet = 'down').count()}
+		data['isante_status'] = {"up":Site.query.filter_by(isante ='up').count(),"down":Site.query.filter_by(isante = 'down').count()}
+		data['fingerprint_status'] = {"up":Site.query.filter_by(fingerprint ='up').count(),"down":Site.query.filter_by(fingerprint = 'down').count()}
+		data['recent_events'] = Evenement.query.join(Site, Evenement.code_site==Site.code)\
+		.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.date_rap,Site.nom)\
+		.order_by(Evenement.date_rap.desc()).limit(5)
+		data['top_bad_sites'] = db.session.query( Evenement.code_site.label('code_site'),func.count(Evenement.code_site).label('qte'), Site.nom.label('nom_site'))\
+		.filter_by(status_ev='down')\
+		.join(Site, Evenement.code_site==Site.code)\
+		.group_by(Evenement.code_site).limit(5)
+
+	return render_template('dashboard.html', page_title=page_title,data=data,filtre=filtre)
 
 
 @app.route('/subscribe',methods=['GET','POST'])
@@ -91,7 +105,7 @@ def list_sites(page=1):
 def add_site():
 	page_title = 'Ajouter site'
 	data= {}
-	data['liste_regions']= ['Centre','Sud','Nord']
+	data['liste_regions']= ['CENTRE','SUD','NORD']
 	data['liste_depts']= ['Ouest','Nord','Nord-Est','Nord-Ouest','Sud','Sud-Est','Nippes','Centre','Grand\'Anse']
 	
 	form = SiteForm(request.form)
@@ -171,7 +185,7 @@ def list_events(page=1):
 	#liste_events= Evenement.query.order_by(Evenement.date_entree.desc()).limit(25)
 	liste_events = db.engine.execute("SELECT entite_concerne,status_ev,code_site,nom as nom_site,fai,departement,region,date_ev FROM evenements,sites WHERE evenements.code_site=sites.code Limit 20")	
 	pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
-	.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenem.date_ev)\
+	.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
 	.filter(Evenement.code_site==Site.code)\
 	.filter(Site.code==Evenement.code_site)\
 	.paginate(page,per_page=PER_PAGE)

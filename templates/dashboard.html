@@ -2,7 +2,7 @@
 
 {% block body %}
 <style>
-	.up { background-color: ; color: ; }
+	.up { background-color: ; color: #008000; }
 	.down { background-color: #FFFFFF; color: #FF0000 }
 	.togle-case { text-transform: capitalize;}
 </style>
@@ -67,7 +67,7 @@
 						<caption>Derniere mise a jour: 20 Avril 2020 10:56</caption>
 						<th>Status</th><th>Site</th><th>date rapporte</th>
 						{% for event in data['recent_events'] %}
-						<tr class="{{event.status_ev}} togle-case"><td>{{event.element}} {{event.status_ev}}</td><td>{{event.nom_site}}</td><td>{{event.date_rap}}</td></tr>
+						<tr class="{{event.status_ev}} togle-case"><td>{{event.element}} {{event.status_ev}}</td><td>{{event.nom}}</td><td>{{event.date_rap}}</td></tr>
 						{% endfor %}
 					</table>
 				</div>
@@ -81,7 +81,7 @@
 						<caption>Derniere mise a jour: 20 Avril 2020 10:56</caption>
 						<th class="text-center">Nom site</th>
 						{% for bad_site in data['top_bad_sites'] %}
-						<tr><td>{{bad_site.nom}}</td></tr>
+						<tr><td class="down">{{bad_site.nom_site}}</td></tr>
 						{% endfor %}
 					</table>
 				</div>
@@ -91,10 +91,10 @@
 	<div class="row">
 		<div class="col-md-3" style="margin:auto;">
 			<select name="filter" class="form-control" onchange="filter(this)">
-				<option value="all">-- Filtrage --</option>
-				<option value="centre" {% if filtering == 'centre'%} selected {% endif %}>Region Centre</option>
-				<option value="nord" {% if filtering == 'nord'%} selected {% endif %}>Region Nord</option>
-				<option value="sud" {% if filtering == 'sud'%} selected {% endif %}>Region Sud</option>
+				<option value="all" {% if filtre == 'all'%} selected {% endif %}>-- Filtrage --</option>
+				<option value="CENTRE" {% if filtre == 'CENTRE'%} selected {% endif %}>Region Centre</option>
+				<option value="NORD" {% if filtre == 'NORD'%} selected {% endif %}>Region Nord</option>
+				<option value="SUD" {% if filtre == 'SUD'%} selected {% endif %}>Region Sud</option>
 			</select>
 		</div>
 	</div>
@@ -102,13 +102,13 @@
     </section>
     
     <!-- jQuery 3 -->
-<script src="{{url_for('static', filename='bower_components/jquery/dist/jquery.min.js')}}"></script>
+<script src="{{url_for('static', filename='composants/jquery/dist/jquery.min.js')}}"></script>
 <!-- Bootstrap 3.3.7 -->
-<script src="{{url_for('static', filename='bower_components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('static', filename='composants/bootstrap/dist/js/bootstrap.min.js')}}"></script>
 <!-- ChartJS -->
-<script src="{{url_for('static', filename='bower_components/chart.js/Chart.js')}}"></script>
+<script src="{{url_for('static', filename='composants/chart.js/Chart.js')}}"></script>
 <!-- FastClick -->
-<script src="{{url_for('static', filename='bower_components/fastclick/lib/fastclick.js')}}"></script>
+<script src="{{url_for('static', filename='composants/fastclick/lib/fastclick.js')}}"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="../../dist/js/demo.js"></script>
 <!-- page script -->
