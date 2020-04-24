@@ -7,32 +7,24 @@
 	.togle-case { text-transform: capitalize;}
 </style>
 <section class="content">
-	<h3 class="text-center">Liste des evenements</h3>
+	<h4 class="text-center">{{ page_title }}</h4>
 	<div class="table-responsive">
 		<table class="table table-hovered">
 			<th>Evenement</th><th>Site</th><th>FAI</th><th>Departement</th><th>Region</th><th>Date Evenement</th>
-			{% if liste_events %}
-				{% for event in liste_events %}
-					<tr class="{{event.status_ev}} togle-case"><td>{{ event.entite_concerne }} {{ event.status_ev }}</td><td>{{ event.nom_site }}</td><td>{{ event.fai }}</td><td>{{ event.departement }}</td><td>{{ event.region }}</td><td>{{ event.date_ev }}</td></tr>
+			{% if pagination %}
+				{% for event in pagination.items %}
+					<tr class="{{event.status_ev}} togle-case"><td>{{ event.entite_concerne }} {{ event.status_ev }}</td><td>{{ event.nom }}</td><td>{{ event.fai }}</td><td>{{ event.departement }}</td><td>{{ event.region }}</td><td>{{ event.date_ev }}</td></tr>
 				{% endfor %}
 			{% endif %}
 		</table>
 	</div>
-	{% macro render_pagination(pagination,endpoint) %}
-	<div class="pagination">
-		{%- for page in pagination.iter_pages() %} 
-			{% if page %}
-				{% if page != pagination.page %}
-					<a href="{{url_for(endpoint,page=page)}}">{{page}}</a>
-				{% else %}
-					<strong>{{page}}</strong>
-				{% endif %}
-			{% else %}
-				<span class="ellipsis">...</span>
-			{% endif %}
-		{% endfor %}
-	</div>
-	{% endmacro %}
 </section>
+
+
+<!-- Pagination section -->
+{% from "_paginationhelpers.html" import render_pagination %}
+<div>
+	{{render_pagination(pagination,'list_events')}}
+</div>
 {% endblock body %}
 

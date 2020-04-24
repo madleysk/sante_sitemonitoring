@@ -2,7 +2,42 @@
 
 {% block body %}
 <section class="content">
-	
+	<h4 class="text-center">Ajouter employe</h4>
+	{% from "_formhelpers.html" import render_field %}
+	<form method="POST">
+		<div class="row">
+			<div class="form-group col-md-6">
+			{{ render_field(form.code_emp,class='form-control',placeholder='Code site') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.nom,class='form-control',placeholder='Nom') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.prenom,class='form-control',placeholder='Prenom') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.email,class='form-control',placeholder='Email de l\'organisation') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.poste,class='form-control') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.adresse,class='form-control') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.tel_perso,class='form-control',placeholder='Numero Perso') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.tel_travail,class='form-control',placeholder='Numero Travail') }}
+			</div>
+			<div class="form-group col-md-6">
+			{{ render_field(form.bureau_affecte,class='form-control') }}
+			</div>
+		</div>
+		<div class="form-group col-md-6">
+			<button type="submit" class="btn-sm btn-primary">Ajouter</button>
+		</div>
+	</form>
 </section>
 {% endblock body %}
 

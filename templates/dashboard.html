@@ -274,6 +274,29 @@
     // You can switch between pie and douhnut using the method below.
     pieChartFing.Doughnut(PieData, pieOptions)
   })
+  // click event on pie charts
+	var ctx = document.getElementById("pieChartInt").getContext("2d");
+	var chart = new Chart(ctx, config);
+
+	document.getElementById("pieChartInt").onclick = function(evt)
+	{   
+		var activePoints = chart.getElementsAtEvent(evt);
+
+		if(activePoints.length > 0)
+		{
+		  //get the internal index of slice in pie chart
+		  var clickedElementindex = activePoints[0]["_index"];
+
+		  //get specific label by index 
+		  var label = chart.data.labels[clickedElementindex];
+
+		  //get value by index      
+		  var value = chart.data.datasets[0].data[clickedElementindex];
+
+		  /* other stuff that requires slice's label and value */
+		  alert("You clicked")
+	   }
+	}
 </script>
 
 {% endblock body %}

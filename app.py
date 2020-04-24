@@ -1,5 +1,6 @@
-from flask import Flask, render_template, jsonify, request, session, redirect
+from flask import Flask, render_template, jsonify, request, session, redirect, flash
 from models import *
+from forms import *
 from auth import *
 from datetime import datetime
 import csv
@@ -34,13 +35,18 @@ def index():
 	#data['recent_events']= Evenement.query.order_by(Evenement.date_entree.desc()).limit(5)
 	data['recent_events']= db.engine.execute('SELECT entite_concerne as element, status_ev,nom as nom_site,date_rap FROM evenements, sites WHERE evenements.code_site=sites.code ORDER BY date_rap DESC LIMIT 5')
 	data['top_bad_sites']= list_bad
+	flash('Flashing test')
 	return render_template('dashboard.html', page_title=page_title,filtering=filtering,data=data)
 
 
-@app.route('/subscribe')
+@app.route('/subscribe',methods=['GET','POST'])
 def subscribe():
 	page_title = 'Inscription'
-	return render_template('layout.html',page_title=page_title)
+	form = RegistrationForm(request.form)
+	if request.method == 'POST' and form.validate():
+		user = Users(form.username.data,form.email.data,form.password.data)
+		flash('Thanks for registering')
+	return render_template('subscribe.html',page_title=page_title,form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -72,39 +78,43 @@ def logout():
 	return redirect('/')
 
 @app.route('/list_sites')
-def list_sites():
+@app.route('/list_sites/page/<int:page>')
+def list_sites(page=1):
 	page_title = 'Liste des sites'
-	liste_sites = Site.query.all()
-	return render_template("liste_sites.html",page_title=page_title,liste_sites=liste_sites)
+	SITES_PER_PAGE = 10
+	#liste_sites = Site.query.all()
+	liste_sites = Site.query.paginate(page,per_page=SITES_PER_PAGE)
+	
+	return render_template("sites_list.html",page_title=page_title,liste_sites=liste_sites)
 
 @app.route('/add_site', methods=['GET','POST'])
 def add_site():
 	page_title = 'Ajouter site'
 	data= {}
-	data['liste_bureaux']= Bureau.query.all()
 	data['liste_regions']= ['Centre','Sud','Nord']
 	data['liste_depts']= ['Ouest','Nord','Nord-Est','Nord-Ouest','Sud','Sud-Est','Nippes','Centre','Grand\'Anse']
 	
-	if request.method == 'POST':
-		code= request.form.get('code')
-		nom= request.form.get('nom')
-		sigle= request.form.get('sigle')
-		pers_resp= request.form.get('pers_resp')
-		bureau_resp= request.form.get('bureau_resp')
-		fai= request.form.get('fai')
-		adresse= request.form.get('adresse')
-		region= request.form.get('region')
-		departement= request.form.get('departement')
-		tel= request.form.get('tel')
-		internet= request.form.get('internet')
-		isante= request.form.get('isante')
-		fingerprint= request.form.get('fingerprint')
+	form = SiteForm(request.form)
+	if request.method == 'POST' and form.validate():
+		code= form.code.data
+		nom= form.nom.data
+		sigle= form.sigle.data
+		pers_resp= form.pers_resp.data
+		bureau_resp= form.bureau_resp.data
+		fai= form.fai.data
+		adresse= form.adresse.data
+		region= form.region.data
+		departement= form.departement.data
+		tel= form.tel.data
+		internet= form.internet.data
+		isante= form.isante.data
+		fingerprint= form.fingerprint.data
 		
 		new_site = Site(code,nom,sigle,pers_resp,bureau_resp,fai,adresse,region,departement,tel,internet,isante,fingerprint)
 		db.session.add(new_site)
 		db.session.commit()
-	
-	return render_template("add_site.html",page_title=page_title,data=data)
+		flash('Thanks for registering')
+	return render_template("add_site.html",page_title=page_title,form=form)
 
 @app.route('/site/<int:id_site>')
 def site(id_site):
@@ -116,21 +126,30 @@ def add_event():
 	page_title = 'Ajouter un evenement'
 	liste_sites = Site.query.all()
 	liste_raisons = Source_ev.query.all()
-	if request.method == 'POST':
-		code_site= request.form.get('code_site')
-		entite_concerne= request.form.get('entite_concerne')
-		status_ev= request.form.get('status_ev')
-		src_ev= request.form.get('src_ev')
-		date_ev= request.form.get('date_ev')
-		date_rap= request.form.get('date_rap')
+
+	form = EvenementForm(request.form)
+	form.code_site.choices = [('','Selectionner')]+[(s.code,s.nom) for s in Site.query.order_by(Site.nom.asc()).add_columns(Site.code,Site.nom).all() ]
+	liste_ev = ['N/A','Probleme FAI','Probleme Interne','Probleme non identifie','Source non identifie']
+	form.raison_ev.choices = [('','Selectionner')]+[(v,v) for v in liste_ev]
+	form.date_entree.data= datetime.now()
+	form.code_utilisateur.data= session['ucode']
+	if request.method == 'POST' and form.validate():
+		code_site= form.code_site.data
+		entite_concerne= form.entite_concerne.data
+		status_ev= form.status_ev.data
+		raison_ev= form.raison_ev.data
+		date_ev= form.date_ev.data
+		date_rap= form.date_rap.data
 		date_entree= datetime.now() # current date and time
-		pers_contact= request.form.get('pers_contact')
-		remarques= request.form.get('remarques')
-		code_utilisateur= session['ucode']
+		pers_contact= form.pers_contact.data
+		remarques= form.remarques.data
+		code_utilisateur= form.code_utilisateur.data
 		#inserting new event in the database
-		new_ev = Evenement(code_site,entite_concerne,status_ev,src_ev,date_ev,date_rap,date_entree,pers_contact,remarques,code_utilisateur)
+		new_ev = Evenement(code_site,entite_concerne,status_ev,date_ev,raison_ev,date_rap,pers_contact,remarques,date_entree,code_utilisateur)
 		db.session.add(new_ev)
 		db.session.commit()
+		flash('Operation reussie !')
+		"""
 		# updating site infos
 		site = Site.query.filter_by(code=code_site).first()
 		if entite_concerne == 'internet':
@@ -141,16 +160,21 @@ def add_event():
 			db.session.commit()
 		elif entite_concerne == 'fingerprint':
 			site.fingerprint = status_ev
-			db.session.commit()
-		
-	return render_template("add_event.html",page_title=page_title,liste_sites=liste_sites,liste_raisons=liste_raisons)
+			db.session.commit()"""
+	return render_template("new_event.html",page_title=page_title,form=form)
 
 @app.route('/list_events')
-def list_events():
+@app.route('/list_events/page/<int:page>')
+def list_events(page=1):
 	page_title = 'Liste evenements'
+	PER_PAGE = 10
 	#liste_events= Evenement.query.order_by(Evenement.date_entree.desc()).limit(25)
-	liste_events = db.engine.execute("SELECT entite_concerne,status_ev,code_site,nom as nom_site,fai,departement,region,date_ev FROM evenements,sites WHERE evenements.code_site=sites.code Limit 20")
-	pagination = Evenement.query.order_by(Evenement.date_entree.desc()).paginate(per_page=25)
+	liste_events = db.engine.execute("SELECT entite_concerne,status_ev,code_site,nom as nom_site,fai,departement,region,date_ev FROM evenements,sites WHERE evenements.code_site=sites.code Limit 20")	
+	pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
+	.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenem.date_ev)\
+	.filter(Evenement.code_site==Site.code)\
+	.filter(Site.code==Evenement.code_site)\
+	.paginate(page,per_page=PER_PAGE)
 	return render_template("list_events.html",page_title=page_title,liste_events=liste_events,pagination=pagination)
 
 @app.route('/list_employes')
@@ -158,10 +182,16 @@ def list_employes():
 	page_title = 'Liste employes'
 	return render_template("list_employes.html",page_title=page_title)
 
-@app.route('/add_employe')
+@app.route('/add_employe', methods=['GET','POST'])
 def add_employe():
 	page_title = 'Ajouter employe'
-	return render_template("add_employe.html",page_title=page_title)
+	form = EmployeForm(request.form)
+	form.poste.choices =  [(p.id, p.nom_poste) for p in Poste.query.all()]
+	form.bureau_affecte.choices =  [(s.code, s.nom) for s in Site.query.order_by(Site.nom.asc()).add_columns(Site.code,Site.nom).all()]
+	if request.method == 'POST' and form.validate():
+		employe = ''
+		flash('Thanks for registering')
+	return render_template("add_employe.html",page_title=page_title,form=form)
 
 @app.route('/list_users')
 def list_users():
