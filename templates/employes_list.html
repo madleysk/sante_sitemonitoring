@@ -5,13 +5,13 @@
 	<h4 class="text-center">{{ page_title }}</h4>
 	<div class="table-responsive">
 		<table class="table table-striped table-hover">
-			<th>Code</th><th>Nom site</th><th>Region</th><th>Departement</th><th>Contact</th><th>telephone</th><th>Actions</th>
-			{% if liste_sites %}
-				{% for site in liste_sites.items %}
+			<th>Nom</th><th>Prenom</th><th>Poste</th><th>Email</th><th>Telephone</th><th>Bureau Affecte</th><th>Actions</th>
+			{% if liste_employes %}
+				{% for employe in liste_employes.items %}
 				<tr>
-					<td>{{site.code}}</td><td>{{site.nom}}</td><td>{{site.region}}</td><td>{{site.departement}}</td><td>{{site.contact_1}}</td><td>{{site.tel_1}}</td>
+					<td>{{employe.nom}}</td><td>{{employe.prenom}}</td><td>{{employe.nom_poste}}</td><td>{{employe.email}}</td><td>{{employe.tel_travail}}</td><td>{{employe.bureau_affecte}}</td>
 					<td>
-						<a href="{{ url_for('site', id_site= site.id) }}" class="btn btn-info btn-sm"><span class="fa fa-eye" title="Voir"></span></a>
+						<a href="#" class="btn btn-info btn-sm"><span class="fa fa-eye" title="Voir"></span></a>
 						{% if current_user.auth_level > 1 %}
 						<a href="#" class="btn btn-warning btn-sm"><span class="fa fa-pencil" title="Modifier"></span></a>
 						{% endif %}
@@ -25,6 +25,7 @@
 <!-- Pagination section -->
 {% from "_paginationhelpers.html" import render_pagination %}
 <div>
-	{{render_pagination(liste_sites,'list_sites')}}
+	{{render_pagination(liste_employes,'list_employes')}}
 </div>
 {% endblock body %}
+

@@ -1,19 +1,28 @@
-from flask import Flask, render_template, jsonify, request, session, redirect, flash
+from flask import Flask, render_template, jsonify, request, session, redirect, flash, url_for
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from models import *
 from forms import *
 from auth import *
+from authentication import auth
 from datetime import datetime
 import csv
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
+app.register_blueprint(auth)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_9#y6K"G4Q0c\n\xec]/'
 DATABASE_URL='mysql://admin:MyPassw0rd#1@localhost/sante_sm_db' #Mysql database
 SQLite_URL = 'sqlite:///database/mydb.db' # Sqlite Database
+UPLOAD_PATH='/home/yelemama/cours_python_web/sante_sitemonitoring/uploaded/'
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config['UPLOAD_FOLDER']=UPLOAD_PATH
 db.init_app(app)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
 
 @app.route('/',methods=['GET'])
 def index():
@@ -21,7 +30,6 @@ def index():
 	#db.drop_all()
 	#initDb()
 	#import_csv_ev("liste_sites.csv",'Site')
-	#session['ucode']='1001'
 	#import_csv_ev("complete_event_list.csv",'Evenement')
 	data = {}
 	filtre = request.args.get('filter')
@@ -31,7 +39,7 @@ def index():
 		data['fingerprint_status'] = {"up":Site.query.filter_by(fingerprint ='up',region=filtre).count(),"down":Site.query.filter_by(fingerprint = 'down').count()}
 		data['recent_events'] = Evenement.query.join(Site, Evenement.code_site==Site.code)\
 		.filter_by(region=filtre)\
-		.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.date_rap,Site.nom)\
+		.add_columns(Evenement.entite_concerne.label('element'),Evenement.status_ev,Evenement.date_rap,Site.nom)\
 		.order_by(Evenement.date_rap.desc()).limit(5)
 		data['top_bad_sites'] = db.session.query( Evenement.code_site.label('code_site'),func.count(Evenement.code_site).label('qte'), Site.nom.label('nom_site'))\
 		.filter_by(status_ev='down')\
@@ -43,7 +51,7 @@ def index():
 		data['isante_status'] = {"up":Site.query.filter_by(isante ='up').count(),"down":Site.query.filter_by(isante = 'down').count()}
 		data['fingerprint_status'] = {"up":Site.query.filter_by(fingerprint ='up').count(),"down":Site.query.filter_by(fingerprint = 'down').count()}
 		data['recent_events'] = Evenement.query.join(Site, Evenement.code_site==Site.code)\
-		.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.date_rap,Site.nom)\
+		.add_columns(Evenement.entite_concerne.label('element'),Evenement.status_ev,Evenement.date_rap,Site.nom)\
 		.order_by(Evenement.date_rap.desc()).limit(5)
 		data['top_bad_sites'] = db.session.query( Evenement.code_site.label('code_site'),func.count(Evenement.code_site).label('qte'), Site.nom.label('nom_site'))\
 		.filter_by(status_ev='down')\
@@ -53,43 +61,6 @@ def index():
 	return render_template('dashboard.html', page_title=page_title,data=data,filtre=filtre)
 
 
-@app.route('/subscribe',methods=['GET','POST'])
-def subscribe():
-	page_title = 'Inscription'
-	form = RegistrationForm(request.form)
-	if request.method == 'POST' and form.validate():
-		user = Users(form.username.data,form.email.data,form.password.data)
-		flash('Thanks for registering')
-	return render_template('subscribe.html',page_title=page_title,form=form)
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-	page_title = 'Login'
-	if request.method == 'POST':
-		username = request.form.get('pseudo')
-		res = Users.query.filter_by(username=username).first()
-		if res != None:
-			if(res.username == username):
-				passwd = request.form.get('passwd')
-				if(pass_verify(passwd,res.passwd)):
-					session['username'] = username
-					session['auth_level'] = res.auth_level
-					session['ucode'] = res.code
-					return redirect('/')
-				else:
-					return render_template("login.html",page_title=page_title,errPWD='Password incorrect')
-		else:
-			return render_template("login.html",page_title=page_title, errUSR="Username does not exist !")
-	return render_template("login.html",page_title = 'Login')
-
-@app.route('/logout')
-def logout():
-	page_title = 'Dashboard'
-	session.clear()
-	session['username']=None
-	session['auth_level']=None
-
-	return redirect('/')
 
 @app.route('/list_sites')
 @app.route('/list_sites/page/<int:page>')
@@ -97,9 +68,61 @@ def list_sites(page=1):
 	page_title = 'Liste des sites'
 	SITES_PER_PAGE = 10
 	#liste_sites = Site.query.all()
-	liste_sites = Site.query.paginate(page,per_page=SITES_PER_PAGE)
+	liste_sites = Site.query.order_by(Site.nom.asc()).paginate(page,per_page=SITES_PER_PAGE)
 	
 	return render_template("sites_list.html",page_title=page_title,liste_sites=liste_sites)
+
+@app.route('/edit_site/<int:id_site>', methods=['GET','POST'])
+def edit_site(id_site):
+	page_title = 'Modifier site'
+	data= {}
+	data['liste_regions']= ['CENTRE','SUD','NORD']
+	data['liste_depts']= ['Ouest','Nord','Nord-Est','Nord-Ouest','Sud','Sud-Est','Nippes','Centre','Grand\'Anse']
+	site = Site.query.get(id_site)
+	
+	form = SiteForm(request.form)
+	if request.method == 'GET':
+		form.code.data= site.code 
+		form.type_site.data= site.type_site 
+		form.nom.data= site.nom 
+		form.sigle.data= site.sigle 
+		form.region.data= site.region 
+		form.departement.data= site.departement 
+		form.commune.data= site.commune 
+		form.adresse.data= site.adresse 
+		form.pepfar.data= site.pepfar 
+		form.contact_1.data= site.contact_1 
+		form.tel_1.data= site.tel_1
+		form.contact_2.data= site.contact_2 
+		form.tel_2.data= site.tel_2
+		form.fai.data= site.fai 
+		form.internet.data= site.internet 
+		form.isante.data= site.isante 
+		form.fingerprint.data= site.fingerprint 
+	if request.method == 'POST' and form.validate():
+		code= form.code.data 
+		type_site= form.type_site.data 
+		nom= form.nom.data 
+		sigle= form.sigle.data 
+		region= form.region.data 
+		departement= form.departement.data 
+		commune= form.commune.data 
+		adresse= form.adresse.data 
+		pepfar= form.pepfar.data 
+		contact_1= form.contact_1.data 
+		tel_1= form.tel_1.data 
+		contact_2= form.contact_2.data 
+		tel_2= form.tel_2.data 
+		fai= form.fai.data 
+		internet= form.internet.data 
+		isante= form.isante.data 
+		fingerprint= form.fingerprint.data
+		
+		site = Site(code,type_site,nom,sigle,region,departement,commune,adresse,pepfar,contact_1,tel_1,contact_2,tel_2,fai,internet,isante,fingerprint)
+		db.session.commit()
+		flash('Thanks for Modifying')
+		redirect('/site/'+str(id_site))
+	return render_template("site_edit.html",page_title=page_title,form=form)
 
 @app.route('/add_site', methods=['GET','POST'])
 def add_site():
@@ -110,30 +133,36 @@ def add_site():
 	
 	form = SiteForm(request.form)
 	if request.method == 'POST' and form.validate():
-		code= form.code.data
-		nom= form.nom.data
-		sigle= form.sigle.data
-		pers_resp= form.pers_resp.data
-		bureau_resp= form.bureau_resp.data
-		fai= form.fai.data
-		adresse= form.adresse.data
-		region= form.region.data
-		departement= form.departement.data
-		tel= form.tel.data
-		internet= form.internet.data
-		isante= form.isante.data
+		code= form.code.data 
+		type_site= form.type_site.data 
+		nom= form.nom.data 
+		sigle= form.sigle.data 
+		region= form.region.data 
+		departement= form.departement.data 
+		commune= form.commune.data 
+		adresse= form.adresse.data 
+		pepfar= form.pepfar.data 
+		contact_1= form.contact_1.data 
+		tel_1= form.tel_1.data 
+		contact_2= form.contact_2.data 
+		tel_2= form.tel_2.data 
+		fai= form.fai.data 
+		internet= form.internet.data 
+		isante= form.isante.data 
 		fingerprint= form.fingerprint.data
 		
-		new_site = Site(code,nom,sigle,pers_resp,bureau_resp,fai,adresse,region,departement,tel,internet,isante,fingerprint)
+		new_site = Site(code,type_site,nom,sigle,region,departement,commune,adresse,pepfar,contact_1,tel_1,contact_2,tel_2,fai,internet,isante,fingerprint)
 		db.session.add(new_site)
 		db.session.commit()
 		flash('Thanks for registering')
-	return render_template("add_site.html",page_title=page_title,form=form)
+	return render_template("site_add.html",page_title=page_title,form=form)
 
 @app.route('/site/<int:id_site>')
+@login_required
 def site(id_site):
 	page_title = 'Information sur le site'
-	return render_template("site.html",page_title=page_title)
+	site = Site.query.get(id_site)
+	return render_template("site.html",page_title=page_title,site=site)
 
 @app.route('/add_event',methods=['GET','POST'])
 def add_event():
@@ -146,7 +175,7 @@ def add_event():
 	liste_ev = ['N/A','Probleme FAI','Probleme Interne','Probleme non identifie','Source non identifie']
 	form.raison_ev.choices = [('','Selectionner')]+[(v,v) for v in liste_ev]
 	form.date_entree.data= datetime.now()
-	form.code_utilisateur.data= session['ucode']
+	form.code_utilisateur.data= current_user.code
 	if request.method == 'POST' and form.validate():
 		code_site= form.code_site.data
 		entite_concerne= form.entite_concerne.data
@@ -163,7 +192,6 @@ def add_event():
 		db.session.add(new_ev)
 		db.session.commit()
 		flash('Operation reussie !')
-		"""
 		# updating site infos
 		site = Site.query.filter_by(code=code_site).first()
 		if entite_concerne == 'internet':
@@ -174,11 +202,12 @@ def add_event():
 			db.session.commit()
 		elif entite_concerne == 'fingerprint':
 			site.fingerprint = status_ev
-			db.session.commit()"""
-	return render_template("new_event.html",page_title=page_title,form=form)
+			db.session.commit()
+	return render_template("event_new.html",page_title=page_title,form=form)
 
 @app.route('/list_events')
 @app.route('/list_events/page/<int:page>')
+@login_required
 def list_events(page=1):
 	page_title = 'Liste evenements'
 	PER_PAGE = 10
@@ -188,13 +217,23 @@ def list_events(page=1):
 	.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
 	.filter(Evenement.code_site==Site.code)\
 	.filter(Site.code==Evenement.code_site)\
+	.order_by(Evenement.date_rap.desc())\
 	.paginate(page,per_page=PER_PAGE)
-	return render_template("list_events.html",page_title=page_title,liste_events=liste_events,pagination=pagination)
+	return render_template("events_list.html",page_title=page_title,liste_events=liste_events,pagination=pagination)
 
 @app.route('/list_employes')
-def list_employes():
+@app.route('/list_employes/page/<int:page>')
+@login_required
+def list_employes(page=1):
 	page_title = 'Liste employes'
-	return render_template("list_employes.html",page_title=page_title)
+	PER_PAGE = 10
+	#liste_employes = Employe.query.order_by(Employe.nom.asc()).paginate(page,per_page=PER_PAGE)
+	liste_employes = Employe.query.join(Poste, Employe.poste==Poste.id)\
+	.join(Site,Employe.bureau_affecte==Site.code)\
+	.add_columns(Employe.nom,Employe.prenom,Poste.nom_poste,Employe.email,Employe.tel_travail,Site.nom.label('bureau_affecte'))\
+	.order_by(Employe.nom.asc())\
+	.paginate(page,per_page=PER_PAGE)
+	return render_template("employes_list.html",page_title=page_title,liste_employes=liste_employes)
 
 @app.route('/add_employe', methods=['GET','POST'])
 def add_employe():
@@ -205,22 +244,76 @@ def add_employe():
 	if request.method == 'POST' and form.validate():
 		employe = ''
 		flash('Thanks for registering')
-	return render_template("add_employe.html",page_title=page_title,form=form)
+	return render_template("employe_add.html",page_title=page_title,form=form)
 
 @app.route('/list_users')
 def list_users():
 	page_title = 'Liste Utilisateurs'
-	return render_template("list_users.html",page_title=page_title)
+	return render_template("users_list.html",page_title=page_title)
 
 @app.route('/import_event',methods=['GET','POST'])
 def import_event():
 	import_csv_ev("evenements.csv",'Evenement')
-	return render_template("add_event.html",page_title=page_title)
+	return render_template("event_import.html",page_title=page_title)
 
-@app.route('/add_user')
+@app.route('/add_user', methods=['GET','POST'])
+@login_required
 def add_user():
 	page_title = 'Ajouter utilisateur'
-	return render_template("add_user.html",page_title=page_title)
+	form = RegistrationForm(request.form)
+	form.auth_level.data = 1
+	if request.method == 'POST' and form.validate():
+		print('Validated')
+		username=form.username.data
+		passwd= form.passwd.data
+		auth_level= form.auth_level.data
+		code= form.code.data
+		user_exists = Users.query.filter_by(username=username).first()
+		code_exists = Employe.query.filter_by(code_emp=code).first()
+		if code_exists is None:
+			form.code.errors.append('Code not valide !')
+		else:
+			pass
+		if user_exists is None:
+			user = Users(username=username,passwd=pass_hashing(passwd),auth_level=auth_level,code=code)
+			db.session.add(user)
+			db.session.commit()
+		else:
+			form.username.errors.append('Username not available !')
+		flash('Thanks for registering')
+		
+	return render_template('user_add.html',page_title=page_title,form=form)
+
+@app.route('/file_import', methods=['GET','POST'])
+@login_required
+def file_import():
+	page_title = 'Importer'
+	ALLOWED_EXTENTIONS={'csv'}
+	type_fichier = request.args.get('ftype')
+	form = FileImportForm(request.form)
+	form.type_fichier.data=type_fichier
+	warning=''
+	infos={}
+	infos['Site']= "\
+	code,type_site,nom,sigle,region,departement,commune,adresse,\
+	pepfar,contact_1,tel_1,contact_2,tel_2,fai,internet,isante,fingerprint"
+	if type_fichier:
+		page_title = 'Importer Liste '+type_fichier+'s'
+		warning=infos[type_fichier]
+	if request.method == 'POST':
+		file_name = secure_filename(request.files['fichier'].filename)
+		type_fichier=request.form.get('type_fichier')
+		if file_name != '' and type_fichier !='':
+			fichier= request.files['fichier']
+			fichier.save(open(os.path.join(UPLOAD_PATH, fichier.filename),'w+b'))
+			print(type_fichier)
+			import_csv_ev(UPLOAD_PATH+file_name,type_fichier)
+			next_page = request.args.get('next')
+			return redirect(next_page or url_for('index'))
+		else:
+			flash('Fichier obligatoire')
+		
+	return render_template('file_import.html',page_title=page_title,form=form,warning=warning)
 	
 @app.route('/api/<string:url>', methods=['GET'])
 def api(url):
@@ -232,6 +325,20 @@ def api(url):
 	if url == 'fingerprint':
 		return str(Site.query.filter_by(fingerprint = param).count())
 	return jsonify({"error":'An error has occured ! Could not find api params !'})
+
+@login_manager.user_loader
+def load_user(user_id):
+    """Check if user is logged-in on every page load."""
+    if user_id is not None:
+        return Users.query.get(user_id)
+    return None
+    
+@login_manager.unauthorized_handler
+def unauthorized():
+    """Redirect unauthorized users to Login page."""
+    flash('You must be logged in to view that page.')
+    return redirect(url_for('auth.login'))
+
 
 def import_csv_ev(fichier,nom_classe):
 	with open(fichier) as csv_file:
@@ -249,7 +356,7 @@ def import_csv_ev(fichier,nom_classe):
 		if nom_classe == 'Evenement':
 			for evenement in lignes_contenu:
 				date_entree= datetime.now()
-				code_utilisateur= session['ucode']
+				code_utilisateur= current_user.code
 				#date_ev=evenement[4]
 				#date_rap=evenement[6]
 				db.session.add(Evenement(code_site=evenement[0],entite_concerne=evenement[2].lower(),status_ev=evenement[3].lower(),date_ev=evenement[4],raison_ev=evenement[5],date_rap=evenement[6],pers_contact=evenement[7],remarques=evenement[8],date_entree=date_entree,code_utilisateur=code_utilisateur))

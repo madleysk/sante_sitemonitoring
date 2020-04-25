@@ -2,7 +2,60 @@
 
 {% block body %}
 <section class="content">
-	
+	<style>
+		.tlabel { display: inline; text-transform: uppercase; font-style:bold;}
+	</style>
+	<h4 class="text-center">{{ page_title }}</h4>
+	<div class="row">
+		<div class="col-md-6">
+			<p><strong class="tlabel">Code: </strong>{{ site.code }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Nom: </strong>{{ site.nom }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Sigle: </strong>{{ site.sigle }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Region: </strong>{{ site.region }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Departement: </strong>{{ site.departement }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Commune: </strong>{{ site.commune }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Adresse: </strong>{{ site.adresse }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Pepfar: </strong>{{ site.pepfar }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Contact 1: </strong>{{ site.contact_1 }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Tel 1: </strong>{{ site.tel_1 }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Contact 2: </strong>{{ site.contact_2 }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Tel 2: </strong>{{ site.tel_2 }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">FAI: </strong>{{ site.fai }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Status Internet: </strong>{{ site.internet }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Status Isante: </strong>{{ site.isante }}</p>
+		</div>
+		<div class="col-md-6">
+			<p><strong class="tlabel">Status Fingerprint: </strong>{{ site.fingerprint }}</p>
+		</div>
+	</div>
 </section>
 {% endblock body %}
 

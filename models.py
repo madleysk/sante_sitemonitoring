@@ -2,13 +2,13 @@ import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from sqlalchemy import create_engine, func
 from auth import *
 from datetime import datetime
 
 
 db = SQLAlchemy()
-
 
 class Site(db.Model):
 	__tablename__ = "sites"
@@ -105,19 +105,42 @@ class Role(db.Model):
 		self.auth_level = auth_level
 		self.role_desc = role_desc
 
-class Users(db.Model):
+class Users(UserMixin, db.Model):
 	__tablename__ = "users"
 	id = db.Column(db.Integer, primary_key=True)
 	username = db.Column(db.String(40),unique=True,nullable = False)
 	passwd = db.Column(db.String(256),nullable = False)
 	auth_level = db.Column(db.Integer,db.ForeignKey("roles.auth_level"),nullable = False)
-	code = db.Column(db.String(10),db.ForeignKey("employes.code_emp"),nullable= False)
+	code = db.Column(db.String(10),db.ForeignKey("employes.code_emp"),unique=True,nullable= False)
+	created_on = db.Column(db.DateTime, default= datetime.now(), nullable=False)
+	modified_on = db.Column(db.DateTime, nullable=True)
+	last_login = db.Column(db.DateTime, nullable=True)
+	#authenticated = db.Column(db.Boolean, default=False)
 
 	def __init__(self,username,passwd,auth_level,code):
 		self.username = username
 		self.passwd = passwd
 		self.auth_level = auth_level
 		self.code = code
+			
+	def set_password(self, password):
+		"""Create hashed password."""
+		self.password = pass_hashing(password)
+
+	def check_password(self, password):
+		"""Check hashed password."""
+		return pass_verify(self.passwd, password)
+
+	def change_password(self, current_password, new_password):
+		"""Change current password."""
+		if check_password(self, current_password):
+			self.passwd = pass_hashing(new_password)
+			self.modified_on = datetime.now()
+			return True
+		return False
+
+	def __repr__(self):
+		return '<User {}>'.format(self.username)
 
 class Source_ev(db.Model):
 	__tablename__ = "source_ev"
@@ -156,8 +179,14 @@ class Evenement(db.Model):
 
 def initDb():
 	"""Database initializer"""
+	# creating database tables
 	db.create_all()
-	# Initializing tables database
+	# adding database triggers
+	with open("database/triggers.sql","r") as triggers_file:
+		triggers = triggers_file.read()
+		db.engine.execute(triggers)
+		db.session.commit()
+	# Initializing database tables
 	# table Source_ev
 	liste_ev = ['N/A','Probleme FAI','Probleme Interne','Probleme non identifie','Source non identifie']
 	for prob in liste_ev:

@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<section class="content">
+	<h4 class="text-center">{{ page_title }}</h4>
+	<div class="table-responsive">
+		<table class="table table-striped table-hover">
+			<th>Evenement</th><th>Site</th><th>FAI</th><th>Departement</th><th>Region</th><th>Date Evenement</th><th>Actions</th>
+			{% if pagination %}
+				{% for event in pagination.items %}
+					<tr class="{{event.status_ev}} togle-case">
+						<td>{{ event.entite_concerne }} {{ event.status_ev }}</td>
+						<td>{{ event.nom }}</td>
+						<td>{{ event.fai }}</td>
+						<td>{{ event.departement }}</td>
+						<td>{{ event.region }}</td>
+						<td>{{ event.date_ev }}</td>
+						<td>
+							<a href="#" class="btn btn-info btn-sm"><span class="fa fa-eye" title="Voir"></span></a>
+							<a href="#" class="btn btn-warning btn-sm"><span class="fa fa-pencil" title="Modifier"></span></a>
+						</td>
+					</tr>
+				{% endfor %}
+			{% endif %}
+		</table>
+	</div>
+</section>
+
+
+<!-- Pagination section -->
+{% from "_paginationhelpers.html" import render_pagination %}
+<div>
+	{{render_pagination(pagination,'list_events')}}
+</div>
+{% endblock body %}
+

@@ -1,0 +1,11 @@
+25-04-2020:
+- Styles applied to lists and action buttons added
+
+24-04-2020:
+- Filtering by region in dashboard
+- Some pure sql codes replaced by sqlalchemy codes
+
+23-04-2020:
+- Pagination helper and pagination of site list, event list views
+- Form class for Evenement, Site and Employe
+- Form view page for Site, Evenement

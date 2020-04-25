@@ -11,6 +11,8 @@
 	<link rel="stylesheet" href="{{url_for('static', filename='composants/Ionicons/css/ionicons.min.css')}}">
 	<!-- jvectormap -->
 	<link rel="stylesheet" href="{{url_for('static', filename='composants/jvectormap/jquery-jvectormap.css')}}">
+	<!-- My Style -->
+	<link rel="stylesheet" href="{{url_for('static', filename='css/mystyle.css')}}">
 </head>
 <body>
 	<!-- Menu -->
@@ -25,7 +27,7 @@
 		  <li class="nav-item active">
 			<a class="nav-link" href="{{url_for('index')}}"><span class="fa fa-home">&nbsp;</span>Accueil <span class="sr-only">(current)</span></a>
 		  </li>
-		{% if session['auth_level'] and session['auth_level'] > 1 %}
+		{% if current_user.is_authenticated %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			Evenement
@@ -35,7 +37,7 @@
 			</div>
 		</li>
 		{% endif %}
-		{% if session['auth_level'] == 9 %}
+		{% if current_user.auth_level == 9 %}
 		<li class="nav-item dropdown">
 			<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 			Administration
@@ -64,12 +66,12 @@
 		  </li>
 		</ul>
 		<div class="pull-right">
-			{% if session['username'] %}
-			<span>Welcome, {{ session['username'] }} - </span>
-			<a href= {{ url_for('logout')}} >Deconnexion</a>
+			{% if current_user.is_authenticated %}
+			<span>Welcome, {{ current_user.username }} - </span>
+			<a href= {{ url_for('auth.logout')}} >Deconnexion</a>
 			{% else %}
-			<a class="mr-2" href= {{ url_for('subscribe')}} ><span class="fa fa-user">&nbsp;</span>Inscription</a>
-			<a class="" href= {{ url_for('login')}} ><span class="fa fa-sign-in">&nbsp;</span>Connexion</a>
+			<a class="mr-2" href= {{ url_for('auth.subscribe')}} ><span class="fa fa-user">&nbsp;</span>Inscription</a>
+			<a class="" href= {{ url_for('auth.login')}} ><span class="fa fa-sign-in">&nbsp;</span>Connexion</a>
 			{% endif %}
 		</div>
 	  </div>

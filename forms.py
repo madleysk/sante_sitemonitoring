@@ -1,12 +1,16 @@
-from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, HiddenField, validators
+from wtforms import Form, BooleanField, StringField, PasswordField, SelectField, HiddenField, FileField, validators
 from wtforms.fields.html5 import DateField, TelField, EmailField
 
 class RegistrationForm(Form):
 	username = StringField('Username',[validators.Length(min=4,max=30)])
 	passwd = PasswordField('Password',[validators.DataRequired(),validators.EqualTo('pwd_confirm', message='Passwords must match')])
 	pwd_confirm = PasswordField('Confirm Password')
-	auth_level = StringField('Role',[validators.Length(min=4,max=30)])
+	auth_level = HiddenField('Role',[validators.DataRequired()])
 	code = StringField('Code',[validators.Length(min=2,max=10,message='Code invalide')])
+
+class LoginForm(Form):
+	username = StringField('Username',[validators.Length(min=4,max=30)])
+	passwd = PasswordField('Password',[validators.DataRequired()])
 
 class SiteForm(Form):
 	code= StringField('Code site',[validators.Length(min=2,max=10)])
@@ -17,11 +21,11 @@ class SiteForm(Form):
 	departement= SelectField(u'Departement',choices=[('ouest','Ouest'),('sud','Sud'),('centre','Centre'),('sud-est','Sud-Est'),('nippes','Nippes')])
 	commune= StringField('Commune',[validators.Length(min=4,max=30)])
 	adresse= StringField('Adresse',[validators.Length(min=4,max=30)])
-	pepfar= SelectField('Site PEPFAR ?',choices=[('oui','Oui'),('Non','Non')])
+	pepfar= SelectField('Site PEPFAR ?',choices=[('oui','Oui'),('non','Non')])
 	contact_1= StringField('Contact 1',[validators.Length(min=4,max=30)])
 	tel_1= TelField('Telephone',[validators.Length(min=8,max=15)])
-	contact_2= StringField('Contact 2',[validators.Length(min=4,max=30)])
-	tel_2= TelField('Telephone',[validators.Length(min=8,max=15)])
+	contact_2= StringField('Contact 2')
+	tel_2= TelField('Telephone')
 	fai= SelectField(u'FAI',choices=[('digicel','Digicel'),('natcom','Natcom'),('access','Access Haiti'),('hainet','Hainet')])
 	internet= SelectField(u'Internet Status',choices=[('up','Up'),('down','Down'),('aucun','Aucune Connection')])
 	isante= SelectField(u'iSante Status',choices=[('up','Up'),('down','Down'),('aucun','Pas de Serveur')])
@@ -31,7 +35,7 @@ class EmployeForm(Form):
 	code_emp= StringField('Bureau',[validators.Length(min=2,max=10)])
 	nom= StringField('Nom',[validators.Length(min=2,max=60)])
 	prenom= StringField('Prenom',[validators.Length(min=2,max=60)])
-	email= EmailField('Adresse Email',[validators.Length(min=2,max=60)])
+	email= EmailField('Adresse Email',[validators.DataRequired(message='Enter a valid email.')])
 	poste= SelectField('Poste',validate_choice=False)
 	adresse= StringField('Adresse Postale',[validators.Length(min=2,max=60)])
 	tel_perso= TelField('Telephone Perso',[validators.Length(min=8,max=15)])
@@ -49,3 +53,7 @@ class EvenementForm(Form):
 	remarques= StringField('Remarques')
 	date_entree= HiddenField('')
 	code_utilisateur= HiddenField('')
+
+class FileImportForm(Form):
+	fichier= FileField('Fichier')
+	type_fichier= SelectField(u'Type Fichier',[validators.DataRequired()],choices=[('','Selectionner'),('Site','Liste Sites'),('Employe','Liste Employes'),('Users','Liste Utilisateurs'),('Evenement','Liste Evenement')])

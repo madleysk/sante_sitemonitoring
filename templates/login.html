@@ -1,37 +1,31 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<style>
-	.login{
-		max-width: 500px;
-		margin: auto;
-		padding: 20px;
-		/*border: solid 1px blue;*/
-		}
-</style>
-<div class="login">
-	<form method="POST">
-	  <div class="form-group">
-		<label for="pseudo">Pseudo</label>
-		<input type="text" name="pseudo" class="form-control" id="pseudo" aria-describedby="pseudoHelp" placeholder="Nom utilisateur ou email" required >
+<section class="content">
+	<h4 class="text-center">{{ page_title }}</h4>
+	{% from "_formhelpers.html" import render_field %}
+	<form method=post>
+		<div class="row mx-auto" style="max-width:500px">
+		<div class="form-group col-sm-12">
+		{{ render_field(login_form.username,class='form-control',placeholder='Nom utilisateur') }}
 		{% if errUSR %}
-		<small id="pseudoHelp" class="form-text alert-danger">{{ errUSR }}</small>
+		<small id="usernameHelp" class="form-text alert-danger">{{ errUSR }}</small>
 		{% else %}
-		<small id="pseudoHelp" class="form-text text-muted">Veuillez entrer votre pseudo.</small>
+		<small id="usernameHelp" class="form-text text-muted">Veuillez entrer votre username.</small>
 		{% endif %}
-	  </div>
-	  <div class="form-group">
-		<label for="pseudo">Mot de passe</label>
-		<input type="password" name="passwd" class="form-control" id="passwd" aria-describedby="passwdHelp" placeholder="Mot de passe" >
+		</div>
+		<div class="form-group col-sm-12">
+		{{ render_field(login_form.passwd,class='form-control',placeholder='Mot de passe') }}
 		{% if errPWD %}
 		<small id="passwdHelp" class="form-text alert-danger">{{ errPWD }}</small>
 		{% else %}
 		<small id="passwdHelp" class="form-text text-muted">Veuillez entrer le mot de passe.</small>
 		{% endif %}
-	  </div>
-	  <button type="submit" name="mysubmit" value="mysubmit" class="btn btn-primary btn-block">Connexion</button>
-		<p class="text-center mt-3"><a href="{{url_for('subscribe')}}">Je m'inscris !</a></p>
+		</div>
+		<div class="form-group col-sm-12">
+			<button type="submit" class="btn-sm btn-primary btn-block">Login</button>
+		</div>
+		</div>
 	</form>
-</div>
+</section>
 {% endblock body %}
-

@@ -1,0 +1,66 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<section class="content">
+	<h4 class="text-center">{{ page_title }}</h4>
+	{% from "_formhelpers.html" import render_field %}
+	<form method=post>
+		<div class="row">
+		<div class="form-group col-md-6">
+		{{ render_field(form.code,class='form-control',placeholder='Code site') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.type_site,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.nom,class='form-control',placeholder='Nom communement appele') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.sigle,class='form-control',placeholder='Sigle representant le nom du site') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.region,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.departement,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.commune,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.adresse,class='form-control',placeholder='Nom de la commune') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.pepfar,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.contact_1,class='form-control',placeholder='Nom et prenom du contact 1') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.tel_1,class='form-control',placeholder='Telephone du contact 1') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.contact_2,class='form-control',placeholder='Nom et prenom du contact 2') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.tel_2,class='form-control',placeholder='Telephone du contact 2') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.fai,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.internet,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.isante,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+		{{ render_field(form.fingerprint,class='form-control') }}
+		</div>
+		<div class="form-group col-md-6">
+			<button type="submit" class="btn-sm btn-primary">Ajouter</button>
+		</div>
+		</div>
+	</form>
+</section>
+{% endblock body %}

@@ -1,0 +1,16 @@
+th { 
+	background-color: #7F7F7F ; 
+	color: #FFFFFF; 
+	text-transform: uppercase;
+	}
+.up { 
+	background-color: ; 
+	color: #008000; 
+	}
+.down { 
+	background-color: #FFFFFF; 
+	color: #FF0000 
+	}
+.togle-case { 
+	text-transform: capitalize;
+	}
