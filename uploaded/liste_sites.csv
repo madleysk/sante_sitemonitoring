@@ -1,55 +1,56 @@
-"Code","type_site","Titre","Region","Departement","Commune","PEPFAR","Contact_1","Tel","Contact_2","Tel_2","FAI","internet","isante","fingerprint"
-"OF-02","bureau","Bureau de Miragoane","SUD","Nippes","Miragoane",,,,,,,"up",,
-"OF-03","bureau","Bureau des Cayes","SUD","Sud","Les Cayes",,,,,,,"up",,
-"OF-04","bureau","Bureau de Bainet","SUD","Sud-Est","Bainet",,"Lovelie Dupont","3724-8981",,,,"up",,
-"CS-01","site","Centre de Sante de Marmelade","CENTRE","Artibonite","Marmelade","Oui","Jean Baptiste Carly",39200058,"Miss Marcelin","4868-8036",,"up","up","up"
-"CS-02","site","Centre de Sante de Raboteau","CENTRE","Artibonite","Gonaives","Oui","Carlo Philemon","4013-1143",,,,"up","up","up"
-"CS-03","site","Centre de Sante Pierre Payen","CENTRE","Artibonite","Saint-Marc","Oui","Beauge	Jean Lucien Daniel	",33592452,,,,"up","up","up"
-"CS-04","site","Centre de Sante Saint-Michel de l'Attalaye","CENTRE","Artibonite","Saint-Michel","Oui"," Jimmy",47624632,"Fritzgerald",,,"up","up","up"
-"CS-05","site","Clinique Saint-Paul de Montrouis","CENTRE","Artibonite","Saint-Marc","Oui","Leo Exantus",,"Sandia Dumay",,,"up","up","up"
-"CS-06","site","Dispensaire de Coupe a l'Inde","CENTRE","Artibonite","Dessalines","Non","Hansy Sanon","3872-5617",,,,,,
-"CS-07","site","Hopital Claire Heureuse de Marchand Dessalines","CENTRE","Artibonite","Dessalines","Oui","Hansy Sanon","3872-5617",,,,"up","up","up"
-"CS-08","site","Centre de Sante de Maissade","CENTRE","Centre","Maassade","Oui","Marc Junis Saintil",,,,,"up","up","up"
-"CS-09","site","Centre de Nutrition et de Sante Rosalie Rendue","CENTRE","Ouest","Cite-Soleil","Oui","Evens Milceus","4013-0957",,,,"up","up","up"
-"CS-10","site","Centre de Sante du Bel-Air","CENTRE","Ouest","Port-au-Prince","Oui","Alexis Celeste","4012-8404",,,,"up","up","up"
-"CS-11","site","Centre de Sante Lucelia Bontemps","CENTRE","Ouest","Croix-des-Bouquets","Oui","Floride Glandas","3766-7924",,,,"up","up","up"
-"CS-12","site","Clinique Communautaire de Delmas 75","CENTRE","Ouest","Delmas","Oui","Daphenide ST-Louis",,,,,"up","up","up"
-"CS-13","site","Clinique Communautaire de Martissant","CENTRE","Ouest","Port-au-Prince","Oui","Macus Joseph","4012-9750",,,,"up","up","up"
-"CS-14","site","Hopital de Fermathe","CENTRE","Ouest","Fermathe","Oui","Alexis Celeste",36778858,,,,"up","up","up"
-"CS-15","site","Grenier OBDC/Laboule 12","CENTRE","Ouest","Petion-Ville","Non","Dasny / Vanessa Beauport",,,,,,,
-"CS-16","site","ICC Grace Children's Hospital","CENTRE","Ouest","Delmas","Oui","Monge Germain","3609-8308",,,,"up","up","up"
-"CS-17","site","Oeuvres de Bienfaisance de Carrefour et de Gressier","CENTRE","Ouest","Carrefour","Oui","Treudsky Antoine","4414-9265",,,,"up","up","up"
-"CS-18","site","SADA - Matheux","CENTRE","Ouest","Arcahaie","Oui","Sandra Dorleans","4012-8700",,,,"up","up","up"
-"CS-19","site","CBP Saint-Raphael","NORD","Nord","Saint-Raphaal","Oui","Sandro",37943233,"DRO Rodelin",31033742,,"up","up","up"
-"CS-20","site","Centre de Sante la Fossette","NORD","Nord","Cap-Haatien","Oui",,,,,,"up","up","up"
-"CS-21","site","Clinique Medico-Chirurgical de Dugue","NORD","Nord","Plaine-du-Nord","Oui",,,,,,"up","up","up"
-"CS-22","site","Hopital Bienfaisance de Pignon","NORD","Nord","Pignon","Oui","Alain Seriphin",37956057,,,,"up","up","up"
-"CS-23","site","Centre de Sante Bois de Laurence","NORD","Nord-Est","Mombin-Crochu","Oui",,,,,,"up","up","up"
-"CS-24","site","Centre de Sante de Capotille","NORD","Nord-Est","Capotille","Oui","Dolcime Belange",41370136,,,,"up","up","up"
-"CS-25","site","Centre de Sante de Carice","NORD","Nord-Est","Carice","Oui","Miss Fabiola",43961047,"Estimable Banave",41944446,,"up","up","up"
-"CS-26","site","Centre de Sante Sainte-Suzanne","NORD","Nord-Est","Sainte-Suzanne","Oui","Dorvil Fritzlin",43641962,,,,"up","up","up"
-"CS-27","site","Centre Medico-Social de Ouanaminthe","NORD","Nord-Est","Ouanaminthe","Oui","LOUIS JOPIC",,,,,"up","up","up"
-"CS-28","site","Dispensaire de Ferrier","NORD","Nord-Est","Ferrier","Oui","Mackson Gedeon",36343947,,,,"up","up","up"
-"CS-29","site","Dispensaire de Jacquezil","NORD","Nord-Est","Caracol","Oui","Kensley Dorcine",43510051,,,,"up","up","up"
-"CS-30","site","Centre de Sante Anse-a-Foleur","NORD","Nord-Ouest","Anse-a-Foleur","Oui","Romond Frantz-Roosvert",38563560,,,,"up","up","up"
-"CS-31","site","Centre de Sante Baie-de-Henne","NORD","Nord-Ouest","Baie-de-Henne","Oui","Nabias Desroches",35309800,,,,"up","up","up"
-"CS-32","site","Centre de Sante Marie Curie","NORD","Nord-Ouest","La Tortue","Non",,,,,,,,
-"CS-33","site","Centre Medical Beraca","NORD","Nord-Ouest","Port-de-Paix","Oui",,,,,,"up","up","up"
-"CS-34","site","Notre-Dame des Palmistes","NORD","Nord-Ouest","La Tortue","Oui","Gracia Mackenson",39365280,,,,"up","up","up"
-"CS-35","site","Centre de Sante Saint-Joseph des Abricots","SUD","Grande-Anse","Abricots","Oui",,,,,,"up","up","up"
-"CS-36","site","Centre de Sante Sainte-Helane","SUD","Grande-Anse","Jeremie","Oui",,,,,,"up","up","up"
-"CS-37","site","Hopital de la Communaute Dame-Marienne","SUD","Grande-Anse","Dame-Marie","Oui",,,,,,"up","up","up"
-"CS-38","site","Klinik Pep Bondye","SUD","Grande-Anse","Jeremie","Oui",,,,,,"up","up","up"
-"CS-39","site","Centre de Sante Jules Fleury de l'Anse-a-Veau","SUD","Nippes","Anse-a-Veau","Oui","Max Joseph",,,,,"up","up","up"
-"CS-40","site","Centre de Sante de L'Asile","SUD","Nippes","L'Asile","Oui","Max Joseph",,,,,"up","up","up"
-"CS-41","site","Centre de Sante de Petit-Trou de Nippes","SUD","Nippes","Petit-Trou","Oui","Max Joseph",,,,,"up","up","up"
-"CS-42","site","Centre de Sante Ile-a-Vache","SUD","Sud","ale-a-Vache","Oui",,,,,,"up","up","up"
-"CS-43","site","Centre de Sante Les Anglais","SUD","Sud","Les Anglais","Oui",,,,,,"up","up","up"
-"CS-44","site","Centre de Sante Lumiare (FINCA)","SUD","Sud","Les Cayes","Oui",,,,,,"up","up","up"
-"CS-45","site","Hopital Lumiare Bonne Fin","SUD","Sud","Cavaillon","Oui",,,,,,"up","up","up"
-"CS-46","site","Klinik Lafanmy","SUD","Sud","Les Cayes","Non",,,,,,,,
-"CS-47","site","Centre de Sante de Bainet","SUD","Sud-Est","Bainet","Oui","Duckens Joseph",28103503,"Max Joseph",38700474,,"up","up","up"
-"CS-48","site","Hopital de Fermathe",,,,,,,,,,,,
-"CS-49","site","Petite Place Cazeau",,,,,,,,,,,,
-"CS-50","site","CS Terrier Rouge",,,,,,,,,,,,
-"CS-51","site","CS Mont Organise",,,,,,,,,,,,
+Code,type_site,Titre,Commune,Departement,Region,PEPFAR C&T,FAI,internet,isante,fingerprint,Contact_1,Tel,Tel_1,Contact_2,Tel_2
+OF-01,bureau,Bureau de PAP,Port-au-Prince,Ouest,CENTRE,Oui,,up,,,Emmanuel Meleance,3757-0844,3655-4297,,
+OF-02,bureau,Bureau de Miragoane,Miragoane,Nippes,SUD,,,up,,,,,,,
+OF-03,bureau,Bureau des Cayes,Les Cayes,Sud,SUD,,,up,,,,,,,
+OF-04,bureau,Bureau de Bainet,Bainet,Sud-Est,SUD,,,up,,,Lovelie Dupont,3724-8981,,,
+CS-01,site,Centre de Santé de Marmelade,Marmelade,Artibonite,CENTRE,Oui,,up,up,up,Jean Baptiste Carly,39200058,40711632,Miss Marcelin,4868-8036
+CS-02,site,Centre de Santé de Raboteau,Gonaïves,Artibonite,CENTRE,Oui,,up,up,up,Carlo Philemon,4013-1143,3851-4380,,
+CS-03,site,Centre de Santé Pierre Payen,Saint-Marc,Artibonite,CENTRE,Oui,,up,up,up,"Beaugé	Jean Lucien Daniel	",33592452,,,
+CS-04,site,Centre de Santé Saint-Michel de l'Attalaye,Saint-Michel,Artibonite,CENTRE,Oui,,up,up,up, Jimmy,47624632,,Fritzgerald,
+CS-05,site,Clinique Saint-Paul de Montrouis,Saint-Marc,Artibonite,CENTRE,Oui,,up,up,up,Leo Exantus,,,Sandia Dumay,
+CS-06,site,Dispensaire de Coupe à l'Inde,Dessalines,Artibonite,CENTRE,Non,,,,,Hansy Sanon,3872-5617,,,
+CS-07,site,Hôpital Claire Heureuse de Marchand Dessalines,Dessalines,Artibonite,CENTRE,Oui,,up,up,up,Hansy Sanon,3872-5617,,,
+CS-08,site,Centre de Santé de Maissade,Maïssade,Centre,CENTRE,Oui,,up,up,up,Marc Junis Saintil,,,,
+CS-09,site,Centre de Nutrition et de Sante Rosalie Rendue,Cité-Soleil,Ouest,CENTRE,Oui,,up,up,up,Evens Milceus,4013-0957,3763-4932,,
+CS-10,site,Centre de Santé du Bel-Air,Port-au-Prince,Ouest,CENTRE,Oui,,up,up,up,Alexis Celeste,4012-8404,3760-1434,,
+CS-11,site,Centre de Santé Lucelia Bontemps,Croix-des-Bouquets,Ouest,CENTRE,Oui,,up,up,up,Floride Glandas,3766-7924,,,
+CS-12,site,Clinique Communautaire de Delmas 75,Delmas,Ouest,CENTRE,Oui,,up,up,up,Daphenide ST-Louis,,,,
+CS-13,site,Clinique Communautaire de Martissant,Port-au-Prince,Ouest,CENTRE,Oui,,up,up,up,Macus Joseph,4012-9750,,,
+CS-14,site,Hopital de Fermathe,Fermathe,Ouest,CENTRE,Oui,,up,up,up,Alexis Celeste,36778858,,,
+CS-15,site,Grenier OBDC/Laboule 12,Pétion-Ville,Ouest,CENTRE,Non,,,,,Dasny / Vanessa Beauport,,,,
+CS-16,site,ICC Grace Children's Hospital,Delmas,Ouest,CENTRE,Oui,,up,up,up,Monge Germain,3609-8308,,,
+CS-17,site,Oeuvres de Bienfaisance de Carrefour et de Gressier,Carrefour,Ouest,CENTRE,Oui,,up,up,up,Treudsky Antoine,4414-9265,,,
+CS-18,site,SADA - Matheux,Arcahaie,Ouest,CENTRE,Oui,,up,up,up,Sandra Dorleans,4012-8700,,,
+CS-19,site,CBP Saint-Raphael,Saint-Raphaël,Nord,NORD,Oui,,up,up,up,Sandro,37943233,,DRO Rodelin,31033742
+CS-20,site,Centre de Santé la Fossette,Cap-Haïtien,Nord,NORD,Oui,,up,up,up,,,,,
+CS-21,site,Clinique Médico-Chirurgical de Dugue,Plaine-du-Nord,Nord,NORD,Oui,,up,up,up,,,,,
+CS-22,site,Hôpital Bienfaisance de Pignon,Pignon,Nord,NORD,Oui,,up,up,up,Alain Seriphin,37956057,,,
+CS-23,site,Centre de Santé Bois de Laurence,Mombin-Crochu,Nord-Est,NORD,Oui,,up,up,up,,,,,
+CS-24,site,Centre de Santé de Capotille,Capotille,Nord-Est,NORD,Oui,,up,up,up,Dolcime Belange,41370136 / 32830590,,,
+CS-25,site,Centre de Santé de Carice,Carice,Nord-Est,NORD,Oui,,up,up,up,Miss Fabiola,43961047,37629559,Estimable Banave,41944446
+CS-26,site,Centre de Santé Sainte-Suzanne,Sainte-Suzanne,Nord-Est,NORD,Oui,,up,up,up,Dorvil Fritzlin,43641962,,,
+CS-27,site,Centre Médico-Social de Ouanaminthe,Ouanaminthe,Nord-Est,NORD,Oui,,up,up,up,LOUIS,JOPIC,33544919,,
+CS-28,site,Dispensaire de Ferrier,Ferrier,Nord-Est,NORD,Oui,,up,up,up,Mackson Gedeon,36343947,,,
+CS-29,site,Dispensaire de Jacquezil,Caracol,Nord-Est,NORD,Oui,,up,up,up,Kensley Dorcine,43510051,,,
+CS-30,site,Centre de Santé Anse-à-Foleur,Anse-à-Foleur,Nord-Ouest,NORD,Oui,,up,up,up,Romond Frantz-Roosvert,38563560,,,
+CS-31,site,Centre de Santé Baie-de-Henne,Baie-de-Henne,Nord-Ouest,NORD,Oui,,up,up,up,Nabias Desroches,35309800,31551242,,
+CS-32,site,Centre de Santé Marie Curie,La Tortue,Nord-Ouest,NORD,Non,,,,,,,,,
+CS-33,site,Centre Médical Beraca,Port-de-Paix,Nord-Ouest,NORD,Oui,,up,up,up,,,,,
+CS-34,site,Notre-Dame des Palmistes,La Tortue,Nord-Ouest,NORD,Oui,,up,up,up,Gracia Mackenson,39365280,,,
+CS-35,site,Centre de Santé Saint-Joseph des Abricots,Abricots,Grande-Anse,SUD,Oui,,up,up,up,,,,,
+CS-36,site,Centre de Santé Sainte-Hélène,Jérémie,Grande-Anse,SUD,Oui,,up,up,up,,,,,
+CS-37,site,Hôpital de la Communauté Dame-Marienne,Dame-Marie,Grande-Anse,SUD,Oui,,up,up,up,,,,,
+CS-38,site,Klinik Pep Bondye,Jérémie,Grande-Anse,SUD,Oui,,up,up,up,,,,,
+CS-39,site,Centre de Santé Jules Fleury de l'Anse-à-Veau,Anse-à-Veau,Nippes,SUD,Oui,,up,up,up,Max Joseph,,,,
+CS-40,site,Centre de Santé de L'Asile,L'Asile,Nippes,SUD,Oui,,up,up,up,Max Joseph,,,,
+CS-41,site,Centre de Santé de Petit-Trou de Nippes,Petit-Trou,Nippes,SUD,Oui,,up,up,up,Max Joseph,,,,
+CS-42,site,Centre de Santé Ile-à-Vache,Île-à-Vache,Sud,SUD,Oui,,up,up,up,,,,,
+CS-43,site,Centre de Santé Les Anglais,Les Anglais,Sud,SUD,Oui,,up,up,up,,,,,
+CS-44,site,Centre de Santé Lumière (FINCA),Les Cayes,Sud,SUD,Oui,,up,up,up,,,,,
+CS-45,site,Hôpital Lumière Bonne Fin,Cavaillon,Sud,SUD,Oui,,up,up,up,,,,,
+CS-46,site,Klinik Lafanmy,Les Cayes,Sud,SUD,Non,,,,,,,,,
+CS-47,site,Centre de Santé de Bainet,Bainet,Sud-Est,SUD,Oui,,up,up,up,Duckens Joseph,28103503,,Max Joseph,38700474
+CS-48,site,Hôpital de Fermathe,,,,,,,,,,,,,
+CS-49,site,Petite Place Cazeau,,,,,,,,,,,,,
+CS-50,site,CS Terrier Rouge,,,,,,,,,,,,,
+CS-51,site,CS Mont Organisé,,,,,,,,,,,,,

@@ -13,7 +13,7 @@
 					<td>
 						<a href="{{ url_for('site', id_site= site.id) }}" class="btn btn-info btn-sm"><span class="fa fa-eye" title="Voir"></span></a>
 						{% if current_user.auth_level > 1 %}
-						<a href="#" class="btn btn-warning btn-sm"><span class="fa fa-pencil" title="Modifier"></span></a>
+						<a href="{{ url_for('edit_site', id_site=site.id)}}" class="btn btn-warning btn-sm"><span class="fa fa-pencil" title="Modifier"></span></a>
 						{% endif %}
 					</td>
 				</tr>

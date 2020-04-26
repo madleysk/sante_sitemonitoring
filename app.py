@@ -14,7 +14,7 @@ app.register_blueprint(auth)
 app.secret_key = b'_9#y6K"G4Q0c\n\xec]/'
 DATABASE_URL='mysql://admin:MyPassw0rd#1@localhost/sante_sm_db' #Mysql database
 SQLite_URL = 'sqlite:///database/mydb.db' # Sqlite Database
-UPLOAD_PATH='/home/yelemama/cours_python_web/sante_sitemonitoring/uploaded/'
+UPLOAD_PATH='/home/madleysk/sante_sitemonitoring/uploaded/'
 app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['UPLOAD_FOLDER']=UPLOAD_PATH
@@ -100,28 +100,28 @@ def edit_site(id_site):
 		form.isante.data= site.isante 
 		form.fingerprint.data= site.fingerprint 
 	if request.method == 'POST' and form.validate():
-		code= form.code.data 
-		type_site= form.type_site.data 
-		nom= form.nom.data 
-		sigle= form.sigle.data 
-		region= form.region.data 
-		departement= form.departement.data 
-		commune= form.commune.data 
-		adresse= form.adresse.data 
-		pepfar= form.pepfar.data 
-		contact_1= form.contact_1.data 
-		tel_1= form.tel_1.data 
-		contact_2= form.contact_2.data 
-		tel_2= form.tel_2.data 
-		fai= form.fai.data 
-		internet= form.internet.data 
-		isante= form.isante.data 
-		fingerprint= form.fingerprint.data
+		site.code= form.code.data 
+		site.type_site= form.type_site.data 
+		site.nom= form.nom.data 
+		site.sigle= form.sigle.data 
+		site.region= form.region.data 
+		site.departement= form.departement.data 
+		site.commune= form.commune.data 
+		site.adresse= form.adresse.data 
+		site.pepfar= form.pepfar.data 
+		site.contact_1= form.contact_1.data 
+		site.tel_1= form.tel_1.data 
+		site.contact_2= form.contact_2.data 
+		site.tel_2= form.tel_2.data 
+		site.fai= form.fai.data 
+		site.internet= form.internet.data 
+		site.isante= form.isante.data 
+		site.fingerprint= form.fingerprint.data
 		
-		site = Site(code,type_site,nom,sigle,region,departement,commune,adresse,pepfar,contact_1,tel_1,contact_2,tel_2,fai,internet,isante,fingerprint)
+		
 		db.session.commit()
-		flash('Thanks for Modifying')
-		redirect('/site/'+str(id_site))
+		
+		redirect(url_for('site',id_site=id_site))
 	return render_template("site_edit.html",page_title=page_title,form=form)
 
 @app.route('/add_site', methods=['GET','POST'])
