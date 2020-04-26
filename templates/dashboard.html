@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 
 {% block body %}
+<style>
+.donut-inner{
+margin-top: -25%;
+margin-bottom: 20%;
+font-weight: bold;
+}
+</style>
 <!-- Content Header (Page header) -->
     <section class="content-header">
       
@@ -15,8 +22,9 @@
             <div class="card-title">
               <h3 class="text-center">Internet status</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body p-1">
               <canvas id="pieChartInt" style="height:250px"></canvas>
+		<div class="donut-inner text-center"><span></span></div>
             </div>
             <!-- /.box-body -->
           </div>
@@ -29,8 +37,9 @@
             <div class="card-title">
               <h3 class="text-center">Isante status</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body p-1">
               <canvas id="pieChartIsante" style="height:250px"></canvas>
+		<div class="donut-inner text-center"><span></span></div>
             </div>
             <!-- /.box-body -->
           </div>
@@ -43,8 +52,9 @@
             <div class="card-title">
               <h3 class="text-center">Fingerprint status</h3>
             </div>
-            <div class="card-body">
+            <div class="card-body p-1">
               <canvas id="pieChartFing" style="height:250px"></canvas>
+		<div class="donut-inner text-center"><span></span></div>
             </div>
             <!-- /.box-body -->
           </div>
@@ -93,14 +103,14 @@
 	</div>
     </section>
     
-    <!-- jQuery 3 -->
-<script src="{{url_for('static', filename='composants/jquery/dist/jquery.min.js')}}"></script>
-<!-- Bootstrap 3.3.7 -->
-<script src="{{url_for('static', filename='composants/bootstrap/js/bootstrap3.min.js')}}"></script>
+<!-- jQuery 3 -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- Bootstrap 4.4.1 JS compiled -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 <!-- ChartJS -->
-<script src="{{url_for('static', filename='composants/chart.js/Chart.js')}}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
 <!-- FastClick -->
-<script src="{{url_for('static', filename='composants/fastclick/lib/fastclick.js')}}"></script>
+<script src="https://cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
 <!-- page script -->
 <script>
 	//Filter script
@@ -119,150 +129,67 @@
     //-------------
     //- PIE CHART - Internet
     //-------------
-    // Get context with jQuery - using jQuery's .get() method.
-    var pieChartCanvas = $('#pieChartInt').get(0).getContext('2d')
-    var pieChartInt       = new Chart(pieChartCanvas)
-    var PieData        = [
-      {
-        value    : {{data['internet_status']['down']}},
-        color    : '#f56954',
-        highlight: '#f56954',
-        label    : 'Non conncte'
-      },
-      {
-        value    : {{data['internet_status']['up']}},
-        color    : '#00a65a',
-        highlight: '#00a65a',
-        label    : 'Internet Ok'
-      }
-      
-    ]
-    var pieOptions     = {
-      //Boolean - Whether we should show a stroke on each segment
-      segmentShowStroke    : true,
-      //String - The colour of each segment stroke
-      segmentStrokeColor   : '#fff',
-      //Number - The width of each segment stroke
-      segmentStrokeWidth   : 2,
-      //Number - The percentage of the chart that we cut out of the middle
-      percentageInnerCutout: 50, // This is 0 for Pie charts
-      //Number - Amount of animation steps
-      animationSteps       : 100,
-      //String - Animation easing effect
-      animationEasing      : 'easeOutBounce',
-      //Boolean - Whether we animate the rotation of the Doughnut
-      animateRotate        : true,
-      //Boolean - Whether we animate scaling the Doughnut from the centre
-      animateScale         : false,
-      //Boolean - whether to make the chart responsive to window resizing
-      responsive           : true,
-      // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-      maintainAspectRatio  : true,
-      //String - A legend template
-      legendTemplate       : '',
-    }
-    //Create pie or douhnut chart
-    // You can switch between pie and douhnut using the method below.
-    pieChartInt.Doughnut(PieData, pieOptions)
+    new Chart(document.getElementById("pieChartInt"), {
+	type:'doughnut',
+	data: {
+		labels: ['Connexion UP','Connexion Down'],
+		datasets:[{
+		label: "Internet Status",
+		backgroundColor:["#00a65a","#f56954"],
+		data:[{{data['internet_status']['up']}},{{data['internet_status']['down']}}]
+		}]
+	},
+	options:{
+		title:{
+		display: false,
+		text: 'Sites Internet Status'
+		}
+		}
+	});
 	
 	
 	//-------------
     //- PIE CHART - Isante
     //-------------
-    // Get context with jQuery - using jQuery's .get() method.
-    var pieChartCanvas = $('#pieChartIsante').get(0).getContext('2d')
-    var pieChartIsante       = new Chart(pieChartCanvas)
-    var PieData        = [
-      {
-        value    : {{data['isante_status']['down']}},
-        color    : '#f56954',
-        highlight: '#f56954',
-        label    : 'Non Operationnel'
-      },
-      {
-        value    : {{data['isante_status']['up']}},
-        color    : '#00a65a',
-        highlight: '#00a65a',
-        label    : 'Operationnel'
-      }
-      
-    ]
-    var pieOptions     = {
-      //Boolean - Whether we should show a stroke on each segment
-      segmentShowStroke    : true,
-      //String - The colour of each segment stroke
-      segmentStrokeColor   : '#fff',
-      //Number - The width of each segment stroke
-      segmentStrokeWidth   : 2,
-      //Number - The percentage of the chart that we cut out of the middle
-      percentageInnerCutout: 50, // This is 0 for Pie charts
-      //Number - Amount of animation steps
-      animationSteps       : 100,
-      //String - Animation easing effect
-      animationEasing      : 'easeOutBounce',
-      //Boolean - Whether we animate the rotation of the Doughnut
-      animateRotate        : true,
-      //Boolean - Whether we animate scaling the Doughnut from the centre
-      animateScale         : false,
-      //Boolean - whether to make the chart responsive to window resizing
-      responsive           : true,
-      // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-      maintainAspectRatio  : true,
-      //String - A legend template
-      legendTemplate       : '',
-    }
-    //Create pie or douhnut chart
-    // You can switch between pie and douhnut using the method below.
-    pieChartIsante.Doughnut(PieData, pieOptions)
+    new Chart(document.getElementById("pieChartIsante"), {
+	type:'doughnut',
+	data: {
+		labels: ['Serveur UP','Serveur Down'],
+		datasets:[{
+		label: "Isante Status",
+		backgroundColor:["#00a65a","#f56954"],
+		data:[{{data['isante_status']['up']}},{{data['isante_status']['down']}}]
+		}]
+	},
+	options:{
+		title:{
+		display: false,
+		text: 'Sites Internet Status'
+		}
+		}
+	});
     
     //-------------
     //- PIE CHART - Fingerprint
     //-------------
-    // Get context with jQuery - using jQuery's .get() method.
-    var pieChartCanvas = $('#pieChartFing').get(0).getContext('2d')
-    var pieChartFing       = new Chart(pieChartCanvas)
-    var PieData        = [
-      {
-        value    : {{data['fingerprint_status']['down']}},
-        color    : '#f56954',
-        highlight: '#f56954',
-        label    : 'Non Operationnel'
-      },
-      {
-        value    : {{data['fingerprint_status']['up']}},
-        color    : '#00a65a',
-        highlight: '#00a65a',
-        label    : 'Operationnel'
-      }
-      
-    ]
-    var pieOptions     = {
-      //Boolean - Whether we should show a stroke on each segment
-      segmentShowStroke    : true,
-      //String - The colour of each segment stroke
-      segmentStrokeColor   : '#fff',
-      //Number - The width of each segment stroke
-      segmentStrokeWidth   : 2,
-      //Number - The percentage of the chart that we cut out of the middle
-      percentageInnerCutout: 50, // This is 0 for Pie charts
-      //Number - Amount of animation steps
-      animationSteps       : 100,
-      //String - Animation easing effect
-      animationEasing      : 'easeOutBounce',
-      //Boolean - Whether we animate the rotation of the Doughnut
-      animateRotate        : true,
-      //Boolean - Whether we animate scaling the Doughnut from the centre
-      animateScale         : false,
-      //Boolean - whether to make the chart responsive to window resizing
-      responsive           : true,
-      // Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
-      maintainAspectRatio  : true,
-      //String - A legend template
-      legendTemplate       : '',
-    }
-    //Create pie or douhnut chart
-    // You can switch between pie and douhnut using the method below.
-    pieChartFing.Doughnut(PieData, pieOptions)
+    new Chart(document.getElementById("pieChartFing"), {
+	type:'doughnut',
+	data: {
+		labels: ['Serveur UP','Serveur Down'],
+		datasets:[{
+		label: "Fingerprint Status",
+		backgroundColor:["#00a65a","#f56954"],
+		data:[{{data['fingerprint_status']['up']}},{{data['fingerprint_status']['down']}}]
+		}]
+	},
+	options:{
+		title:{
+		display: false,
+		text: 'Sites Internet Status'
+		}
+		}
+	});
+
   })
 </script>
 
