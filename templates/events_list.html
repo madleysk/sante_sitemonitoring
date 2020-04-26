@@ -35,7 +35,7 @@
 		<strong>
 		{% if  pagination.total > pagination.per_page %}
 			{{ ((pagination.per_page*pagination.page)-pagination.per_page)+1 }} - {{ (pagination.per_page*pagination.page) }} / {{ pagination.total }}
-		{% elif liste_sites.total==0 %}
+		{% elif pagination.total==0 %}
 			0 - {{ pagination.total }} / {{ pagination.total }}
 		{% else %}
 			1 - {{ pagination.total }} / {{ pagination.total }}

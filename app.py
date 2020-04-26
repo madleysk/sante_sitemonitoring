@@ -71,6 +71,7 @@ def list_sites(page=1):
 	"""List of sites with pagination enabled"""
 	page_title = 'Liste des sites'
 	keyword= request.args.get('search')
+	liste_sites = None
 	if keyword == None:
 		liste_sites = Site.query.order_by(Site.nom.asc()).paginate(page,per_page=PER_PAGE)
 	else:
@@ -126,7 +127,7 @@ def edit_site(id_site):
 		site.fingerprint= form.fingerprint.data
 		db.session.commit()
 		
-		redirect(url_for('site',id_site=id_site))
+		return redirect(url_for('site',id_site=id_site))
 	return render_template("site_edit.html",page_title=page_title,form=form)
 
 @app.route('/add_site', methods=['GET','POST'])
@@ -273,7 +274,10 @@ def add_employe():
 		employe = Employe(code_emp=form.code_emp.data,nom=form.nom.data,prenom=form.prenom.data\
 		,email=form.email.data,poste=form.poste.data,adresse=form.adresse.data\
 		,tel_perso=form.tel_perso.data,tel_travail=form.tel_travail.data,bureau_affecte=form.bureau_affecte.data)
+		db.session.add(employe)
+		db.session.commit()
 		flash('Operation completed successfuly !')
+		return redirect(url_for('list_employes'))
 	return render_template("employe_add.html",page_title=page_title,form=form)
 # User
 @app.route('/list_users')

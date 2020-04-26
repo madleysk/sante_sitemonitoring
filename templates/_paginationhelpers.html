@@ -1,5 +1,5 @@
 {% macro render_pagination(pagination,endpoint) %}
-	<nav aria-label="Navigation Page" class="text-center">
+	<nav aria-label="Navigation Page" class="text-center" style="overflow:auto;">
 		<ul class="pagination">
 			{% if pagination.has_prev %}
 			<li class="page-item" ><a class="page-link" href="{{ url_for(endpoint, page=pagination.prev_num) }}?{{ request.query_string.decode() }}">Precedent</a></li>
