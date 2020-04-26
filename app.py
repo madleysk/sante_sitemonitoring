@@ -62,14 +62,18 @@ def index():
 
 
 
-@app.route('/list_sites')
-@app.route('/list_sites/page/<int:page>')
+@app.route('/list_sites', methods=['GET','POST'])
+@app.route('/list_sites/page/<int:page>', methods=['GET','POST'])
 def list_sites(page=1):
 	page_title = 'Liste des sites'
 	SITES_PER_PAGE = 10
-	#liste_sites = Site.query.all()
-	liste_sites = Site.query.order_by(Site.nom.asc()).paginate(page,per_page=SITES_PER_PAGE)
-	
+	keyword= request.args.get('search')
+	if keyword == None:
+		liste_sites = Site.query.order_by(Site.nom.asc()).paginate(page,per_page=SITES_PER_PAGE)
+	else:
+		keyword = "%"+keyword+"%"
+		liste_sites = Site.query.filter(Site.nom.like(keyword)).paginate(page,per_page=SITES_PER_PAGE)
+
 	return render_template("sites_list.html",page_title=page_title,liste_sites=liste_sites)
 
 @app.route('/edit_site/<int:id_site>', methods=['GET','POST'])
@@ -211,15 +215,24 @@ def add_event():
 def list_events(page=1):
 	page_title = 'Liste evenements'
 	PER_PAGE = 10
-	#liste_events= Evenement.query.order_by(Evenement.date_entree.desc()).limit(25)
-	liste_events = db.engine.execute("SELECT entite_concerne,status_ev,code_site,nom as nom_site,fai,departement,region,date_ev FROM evenements,sites WHERE evenements.code_site=sites.code Limit 20")	
-	pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
-	.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
-	.filter(Evenement.code_site==Site.code)\
-	.filter(Site.code==Evenement.code_site)\
-	.order_by(Evenement.date_rap.desc())\
-	.paginate(page,per_page=PER_PAGE)
-	return render_template("events_list.html",page_title=page_title,liste_events=liste_events,pagination=pagination)
+	keyword = request.args.get('search')
+	if keyword == None:
+		pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
+		.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
+		.filter(Evenement.code_site==Site.code)\
+		.filter(Site.code==Evenement.code_site)\
+		.order_by(Evenement.date_rap.desc())\
+		.paginate(page,per_page=PER_PAGE)
+	else:
+		keyword= "%"+keyword+"%"
+		pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
+                .add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
+                .filter(Evenement.code_site==Site.code)\
+                .filter(Site.code==Evenement.code_site)\
+		.filter(Site.nom.like(keyword) | Evenement.entite_concerne.like(keyword))\
+                .order_by(Evenement.date_rap.desc())\
+                .paginate(page,per_page=PER_PAGE)
+	return render_template("events_list.html",page_title=page_title,pagination=pagination)
 
 @app.route('/list_employes')
 @app.route('/list_employes/page/<int:page>')
