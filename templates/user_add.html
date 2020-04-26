@@ -19,7 +19,8 @@
 		{{ render_field(form.code,class='form-control') }}
 		</div>
 		<div class="form-group col-sm-12">
-			<button type="submit" class="btn-sm btn-primary">Register</button>
+			<button type="submit" class="btn-sm btn-success">Ajouter</button>
+			<a href="{{ url_for('file_import') }}?ftype=Users" class="btn btn-primary btn-sm">Importer</a>
 		</div>
 		</div>
 	</form>

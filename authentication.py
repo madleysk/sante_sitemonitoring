@@ -1,7 +1,9 @@
 from flask import Blueprint, render_template, jsonify, request, session, redirect, flash, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-from models import Users
+from models import Users,Employe,Site
+from auth import *
 from forms import LoginForm,RegistrationForm
+from flask import current_app as app
 
 auth = Blueprint('auth',__name__,template_folder='templates')
 
@@ -9,9 +11,32 @@ auth = Blueprint('auth',__name__,template_folder='templates')
 def subscribe():
 	page_title = 'Inscription'
 	form = RegistrationForm(request.form)
+	form.auth_level.data = 1
 	if request.method == 'POST' and form.validate():
-		user = Users(form.username.data,form.email.data,form.password.data)
-		flash('Thanks for registering')
+		valid_data = True
+		username=form.username.data
+		passwd= form.passwd.data
+		auth_level= form.auth_level.data
+		code= form.code.data
+		user_exists = Users.query.filter_by(username=username).first()
+		code_exists = Users.query.filter_by(code=code).first()
+		code_valid = Employe.query.filter_by(code_emp=code).first()
+		if code_exists is not None:
+			form.code.errors.append('Code not available !')
+			valid_data = False
+		if code_valid is None:
+			form.code.errors.append('Code not valide !')
+			valid_data = False
+		if user_exists is not None:
+			form.username.errors.append('Username not available !')
+			valid_data = False
+		if valid_data == True:
+			user = Users(username=username,passwd=pass_hashing(passwd),auth_level=auth_level,code=code)
+			db.session.add(user)
+			db.session.commit()
+			flash('Thanks for registering')
+			login_user(user)
+			redirect(url_for('index'))
 	return render_template('subscribe.html',page_title=page_title,form=form)
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -44,3 +69,4 @@ def login():
 def logout():
 	logout_user()
 	return redirect('/')
+

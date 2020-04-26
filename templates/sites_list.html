@@ -27,6 +27,18 @@
 			{% endif %}
 		</table>
 	</div>
+	<div class="pull-right">
+		<span class="">Affichage: </span>
+		<strong>
+		{% if  liste_sites.total > liste_sites.per_page %}
+			{{ ((liste_sites.per_page*liste_sites.page)-liste_sites.per_page)+1 }} - {{ (liste_sites.per_page*liste_sites.page) }} / {{ liste_sites.total }}
+		{% elif liste_sites.total==0 %}
+			0 - {{ liste_sites.total }} / {{ liste_sites.total }}
+		{% else %}
+			1 - {{ liste_sites.total }} / {{ liste_sites.total }}
+		{% endif %}
+		</strong>
+	</div>
 </section>
 <!-- Pagination section -->
 {% from "_paginationhelpers.html" import render_pagination %}

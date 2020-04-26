@@ -58,7 +58,8 @@
 		{{ render_field(form.fingerprint,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<button type="submit" class="btn-sm btn-primary">Ajouter</button>
+			<button type="submit" class="btn-sm btn-success">Ajouter</button>
+			<a href="{{ url_for('file_import') }}?ftype=Site" class="btn btn-primary btn-sm">Importer</a>
 		</div>
 		</div>
 	</form>

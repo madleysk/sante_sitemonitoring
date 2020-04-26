@@ -4,11 +4,11 @@
 <section class="content">
 	<h4 class="text-center">{{ page_title }}</h4>
 	<form method="GET">
-                <div class="pull-right">
-                        <input type="search" name="search" id="search" placeholder="Rechercher" />
-                        <button type="submit" class="btn btn-sm btn-success">Rechercher</button>
-                </div>
-        </form>
+			<div class="pull-right">
+					<input type="search" name="search" id="search" placeholder="Rechercher" />
+					<button type="submit" class="btn btn-sm btn-success">Rechercher</button>
+			</div>
+	</form>
 	<div class="table-responsive">
 		<table class="table table-striped table-hover">
 			<th>Evenement</th><th>Site</th><th>FAI</th><th>Departement</th><th>Region</th><th>Date Evenement</th><th>Actions</th>
@@ -29,6 +29,18 @@
 				{% endfor %}
 			{% endif %}
 		</table>
+	</div>
+	<div class="pull-right">
+		<span class="">Affichage: </span>
+		<strong>
+		{% if  pagination.total > pagination.per_page %}
+			{{ ((pagination.per_page*pagination.page)-pagination.per_page)+1 }} - {{ (pagination.per_page*pagination.page) }} / {{ pagination.total }}
+		{% elif liste_sites.total==0 %}
+			0 - {{ pagination.total }} / {{ pagination.total }}
+		{% else %}
+			1 - {{ pagination.total }} / {{ pagination.total }}
+		{% endif %}
+		</strong>
 	</div>
 </section>
 

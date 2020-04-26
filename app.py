@@ -10,6 +10,7 @@ from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.register_blueprint(auth)
+#app.register_blueprint(site)
 # Set the secret key to some random bytes. Keep this really secret!
 app.secret_key = b'_9#y6K"G4Q0c\n\xec]/'
 DATABASE_URL='mysql://admin:MyPassw0rd#1@localhost/sante_sm_db' #Mysql database
@@ -23,8 +24,10 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+PER_PAGE= 20
 
-@app.route('/',methods=['GET'])
+# default page
+@app.route('/')
 def index():
 	page_title = 'Dashboard'
 	#db.drop_all()
@@ -61,18 +64,18 @@ def index():
 	return render_template('dashboard.html', page_title=page_title,data=data,filtre=filtre)
 
 
-
+# Site
 @app.route('/list_sites', methods=['GET','POST'])
 @app.route('/list_sites/page/<int:page>', methods=['GET','POST'])
 def list_sites(page=1):
+	"""List of sites with pagination enabled"""
 	page_title = 'Liste des sites'
-	SITES_PER_PAGE = 10
 	keyword= request.args.get('search')
 	if keyword == None:
-		liste_sites = Site.query.order_by(Site.nom.asc()).paginate(page,per_page=SITES_PER_PAGE)
+		liste_sites = Site.query.order_by(Site.nom.asc()).paginate(page,per_page=PER_PAGE)
 	else:
 		keyword = "%"+keyword+"%"
-		liste_sites = Site.query.filter(Site.nom.like(keyword)).paginate(page,per_page=SITES_PER_PAGE)
+		liste_sites = Site.query.filter(Site.nom.like(keyword)).paginate(page,per_page=PER_PAGE)
 
 	return render_template("sites_list.html",page_title=page_title,liste_sites=liste_sites)
 
@@ -121,8 +124,6 @@ def edit_site(id_site):
 		site.internet= form.internet.data 
 		site.isante= form.isante.data 
 		site.fingerprint= form.fingerprint.data
-		
-		
 		db.session.commit()
 		
 		redirect(url_for('site',id_site=id_site))
@@ -168,7 +169,9 @@ def site(id_site):
 	site = Site.query.get(id_site)
 	return render_template("site.html",page_title=page_title,site=site)
 
+# Evenement
 @app.route('/add_event',methods=['GET','POST'])
+@login_required
 def add_event():
 	page_title = 'Ajouter un evenement'
 	liste_sites = Site.query.all()
@@ -214,7 +217,6 @@ def add_event():
 @login_required
 def list_events(page=1):
 	page_title = 'Liste evenements'
-	PER_PAGE = 10
 	keyword = request.args.get('search')
 	if keyword == None:
 		pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
@@ -232,42 +234,66 @@ def list_events(page=1):
 		.filter(Site.nom.like(keyword) | Evenement.entite_concerne.like(keyword))\
                 .order_by(Evenement.date_rap.desc())\
                 .paginate(page,per_page=PER_PAGE)
+
 	return render_template("events_list.html",page_title=page_title,pagination=pagination)
 
+# Employe
 @app.route('/list_employes')
 @app.route('/list_employes/page/<int:page>')
 @login_required
 def list_employes(page=1):
 	page_title = 'Liste employes'
-	PER_PAGE = 10
-	#liste_employes = Employe.query.order_by(Employe.nom.asc()).paginate(page,per_page=PER_PAGE)
-	liste_employes = Employe.query.join(Poste, Employe.poste==Poste.id)\
-	.join(Site,Employe.bureau_affecte==Site.code)\
-	.add_columns(Employe.nom,Employe.prenom,Poste.nom_poste,Employe.email,Employe.tel_travail,Site.nom.label('bureau_affecte'))\
-	.order_by(Employe.nom.asc())\
-	.paginate(page,per_page=PER_PAGE)
+	keyword= request.args.get('search')
+	if keyword == None:
+		liste_employes = Employe.query.join(Poste, Employe.poste==Poste.id)\
+		.join(Site,Employe.bureau_affecte==Site.code)\
+		.add_columns(Employe.nom,Employe.prenom,Poste.nom_poste,Employe.email,Employe.tel_travail,Site.nom.label('bureau_affecte'))\
+		.order_by(Employe.nom.asc())\
+		.paginate(page,per_page=PER_PAGE)
+	else:
+		keyword = "%"+keyword+"%"
+		liste_employes = Employe.query.join(Poste, Employe.poste==Poste.id)\
+		.join(Site,Employe.bureau_affecte==Site.code)\
+		.add_columns(Employe.nom,Employe.prenom,Poste.nom_poste,Employe.email,Employe.tel_travail,Site.nom.label('bureau_affecte'))\
+		.filter(Employe.nom.like(keyword) | Employe.prenom.like(keyword))\
+		.order_by(Employe.nom.asc())\
+		.paginate(page,per_page=PER_PAGE)
+		
+	
 	return render_template("employes_list.html",page_title=page_title,liste_employes=liste_employes)
 
 @app.route('/add_employe', methods=['GET','POST'])
+@login_required
 def add_employe():
 	page_title = 'Ajouter employe'
 	form = EmployeForm(request.form)
-	form.poste.choices =  [(p.id, p.nom_poste) for p in Poste.query.all()]
-	form.bureau_affecte.choices =  [(s.code, s.nom) for s in Site.query.order_by(Site.nom.asc()).add_columns(Site.code,Site.nom).all()]
+	form.poste.choices = [('','Selectionner')] + [(p.id, p.nom_poste) for p in Poste.query.all()]
+	form.bureau_affecte.choices = [('','Selectionner')] +  [(s.code, s.nom) for s in Site.query.order_by(Site.nom.asc()).add_columns(Site.code,Site.nom).all()]
 	if request.method == 'POST' and form.validate():
-		employe = ''
-		flash('Thanks for registering')
+		employe = Employe(code_emp=form.code_emp.data,nom=form.nom.data,prenom=form.prenom.data\
+		,email=form.email.data,poste=form.poste.data,adresse=form.adresse.data\
+		,tel_perso=form.tel_perso.data,tel_travail=form.tel_travail.data,bureau_affecte=form.bureau_affecte.data)
+		flash('Operation completed successfuly !')
 	return render_template("employe_add.html",page_title=page_title,form=form)
-
+# User
 @app.route('/list_users')
-def list_users():
+@app.route('/list_users/page/<int:page>')
+@login_required
+def list_users(page=1):
 	page_title = 'Liste Utilisateurs'
-	return render_template("users_list.html",page_title=page_title)
+	keyword= request.args.get('search')
+	if keyword == None:
+		liste_users = Users.query.join(Role, Users.auth_level==Role.auth_level)\
+		.add_columns(Users.code,Users.username,Users.created_on,Users.modified_on,Role.role_desc.label('role'))\
+		.order_by(Users.username.asc()).paginate(page,PER_PAGE)
+	else:
+		keyword = "%"+keyword+"%"
+		liste_users = Users.query.join(Role, Users.auth_level==Role.auth_level)\
+		.add_columns(Users.code,Users.username,Users.created_on,Users.modified_on,Role.role_desc.label('role'))\
+		.filter(Users.username.like(keyword))\
+		.order_by(Users.username.asc()).paginate(page,PER_PAGE)
 
-@app.route('/import_event',methods=['GET','POST'])
-def import_event():
-	import_csv_ev("evenements.csv",'Evenement')
-	return render_template("event_import.html",page_title=page_title)
+	return render_template("users_list.html",page_title=page_title,liste_users=liste_users)
 
 @app.route('/add_user', methods=['GET','POST'])
 @login_required
@@ -276,24 +302,28 @@ def add_user():
 	form = RegistrationForm(request.form)
 	form.auth_level.data = 1
 	if request.method == 'POST' and form.validate():
-		print('Validated')
+		valid_data = True
 		username=form.username.data
 		passwd= form.passwd.data
 		auth_level= form.auth_level.data
 		code= form.code.data
 		user_exists = Users.query.filter_by(username=username).first()
-		code_exists = Employe.query.filter_by(code_emp=code).first()
-		if code_exists is None:
+		code_exists = Users.query.filter_by(code=code).first()
+		code_valid = Employe.query.filter_by(code_emp=code).first()
+		if code_exists is not None:
+			form.code.errors.append('Code not available !')
+			valid_data = False
+		if code_valid is None:
 			form.code.errors.append('Code not valide !')
-		else:
-			pass
-		if user_exists is None:
+			valid_data = False
+		if user_exists is not None:
+			form.username.errors.append('Username not available !')
+			valid_data = False
+		if valid_data == True:
 			user = Users(username=username,passwd=pass_hashing(passwd),auth_level=auth_level,code=code)
 			db.session.add(user)
 			db.session.commit()
-		else:
-			form.username.errors.append('Username not available !')
-		flash('Thanks for registering')
+		flash('User addedd successfuly')
 		
 	return render_template('user_add.html',page_title=page_title,form=form)
 
@@ -302,6 +332,7 @@ def add_user():
 def file_import():
 	page_title = 'Importer'
 	ALLOWED_EXTENTIONS={'csv'}
+	ALLOWED_FTYPE =['Site','Users','Employe','Evenement']
 	type_fichier = request.args.get('ftype')
 	form = FileImportForm(request.form)
 	form.type_fichier.data=type_fichier
@@ -310,9 +341,13 @@ def file_import():
 	infos['Site']= "\
 	code,type_site,nom,sigle,region,departement,commune,adresse,\
 	pepfar,contact_1,tel_1,contact_2,tel_2,fai,internet,isante,fingerprint"
+	infos['Users']=''
+	infos['Employe']=''
+	infos['Evenement']=''
 	if type_fichier:
 		page_title = 'Importer Liste '+type_fichier+'s'
-		warning=infos[type_fichier]
+		if type_fichier in ALLOWED_FTYPE:
+			warning=infos[type_fichier]
 	if request.method == 'POST':
 		file_name = secure_filename(request.files['fichier'].filename)
 		type_fichier=request.form.get('type_fichier')
@@ -385,7 +420,8 @@ def import_csv_ev(fichier,nom_classe):
 				db.session.commit()
 		if nom_classe == 'Employe':
 			for employe in lignes_contenu:
-				db.session.add(Employe(code=employe[0],nom=employe[1],prenom=employe[2],email=employe[3],poste=employe[4],adresse=employe[5],tel_perso=employe[6],tel_travail=employe[7],bureau_affecte=employe[8]))
+				db.session.add(Employe(code=employe[0],nom=employe[1],prenom=employe[2],email=employe[3],poste=employe[4],adresse=employe[5],tel_perso=employe[6],tel_travail=employe[7],bureau_affecte=employe
+				[8]))
 			db.session.commit()
 
 if __name__ == '__main__':

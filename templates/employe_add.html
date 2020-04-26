@@ -7,7 +7,7 @@
 	<form method="POST">
 		<div class="row">
 			<div class="form-group col-md-6">
-			{{ render_field(form.code_emp,class='form-control',placeholder='Code site') }}
+			{{ render_field(form.code_emp,class='form-control',placeholder='Code Employe') }}
 			</div>
 			<div class="form-group col-md-6">
 			{{ render_field(form.nom,class='form-control',placeholder='Nom') }}
@@ -35,7 +35,8 @@
 			</div>
 		</div>
 		<div class="form-group col-md-6">
-			<button type="submit" class="btn-sm btn-primary">Ajouter</button>
+			<button type="submit" class="btn btn-sm btn-success">Ajouter</button>
+			<a href="{{ url_for('file_import') }}?ftype=Employe" class="btn btn-primary btn-sm">Importer</a>
 		</div>
 	</form>
 </section>

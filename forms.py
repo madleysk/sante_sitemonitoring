@@ -32,7 +32,7 @@ class SiteForm(Form):
 	fingerprint= SelectField(u'Fingerprint Status',choices=[('up','Up'),('down','Down'),('aucun','Pas de Serveur')])
 
 class EmployeForm(Form):
-	code_emp= StringField('Bureau',[validators.Length(min=2,max=10)])
+	code_emp= StringField('Code',[validators.Length(min=2,max=10)])
 	nom= StringField('Nom',[validators.Length(min=2,max=60)])
 	prenom= StringField('Prenom',[validators.Length(min=2,max=60)])
 	email= EmailField('Adresse Email',[validators.DataRequired(message='Enter a valid email.')])
