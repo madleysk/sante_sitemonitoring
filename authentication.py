@@ -3,9 +3,11 @@ from flask_login import LoginManager, current_user, login_required, login_user, 
 from models import Users,Employe,Site
 from auth import *
 from forms import LoginForm,RegistrationForm
+from flask_sqlalchemy import SQLAlchemy
 from flask import current_app as app
 
 auth = Blueprint('auth',__name__,template_folder='templates')
+db = SQLAlchemy()
 
 @auth.route('/subscribe',methods=['GET','POST'])
 def subscribe():
@@ -36,7 +38,7 @@ def subscribe():
 			db.session.commit()
 			flash('Thanks for registering')
 			login_user(user)
-			redirect(url_for('index'))
+			return redirect(url_for('index'))
 	return render_template('subscribe.html',page_title=page_title,form=form)
 
 @auth.route('/login', methods=['GET', 'POST'])

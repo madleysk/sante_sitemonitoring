@@ -23,7 +23,7 @@
 						<td>{{ event.date_ev }}</td>
 						<td>
 							<a href="#" class="btn btn-info btn-sm"><span class="fa fa-eye" title="Voir"></span></a>
-							<a href="#" class="btn btn-warning btn-sm"><span class="fa fa-pencil" title="Modifier"></span></a>
+							<a href="{{ url_for('edit_event',id_event=event.id) }}" class="btn btn-warning btn-sm"><span class="fa fa-pencil" title="Modifier"></span></a>
 						</td>
 					</tr>
 				{% endfor %}

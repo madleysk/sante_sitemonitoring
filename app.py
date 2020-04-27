@@ -221,7 +221,7 @@ def list_events(page=1):
 	keyword = request.args.get('search')
 	if keyword == None:
 		pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
-		.add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
+		.add_columns(Evenement.id,Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
 		.filter(Evenement.code_site==Site.code)\
 		.filter(Site.code==Evenement.code_site)\
 		.order_by(Evenement.date_rap.desc())\
@@ -229,7 +229,7 @@ def list_events(page=1):
 	else:
 		keyword= "%"+keyword+"%"
 		pagination = Evenement.query.join(Site, Evenement.code_site==Site.code)\
-                .add_columns(Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
+                .add_columns(Evenement.id,Evenement.entite_concerne,Evenement.status_ev,Evenement.code_site,Site.nom,Site.fai,Site.departement,Site.region,Evenement.date_ev)\
                 .filter(Evenement.code_site==Site.code)\
                 .filter(Site.code==Evenement.code_site)\
 		.filter(Site.nom.like(keyword) | Evenement.entite_concerne.like(keyword))\
@@ -237,6 +237,47 @@ def list_events(page=1):
                 .paginate(page,per_page=PER_PAGE)
 
 	return render_template("events_list.html",page_title=page_title,pagination=pagination)
+
+@app.route('/edit_event/<int:id_event>')
+def edit_event(id_event):
+	page_title = 'Modifier Evenement'
+	evenement = Evenement.query.get(id_event)
+	form = EvenementForm(request.form)
+	form.code_site.choices = [('','Selectionner')]+[(s.code,s.nom) for s in Site.query.order_by(Site.nom.asc()).add_columns(Site.code,Site.nom).all() ]
+	liste_ev = ['N/A','Probleme FAI','Probleme Interne','Probleme non identifie','Source non identifie']
+	form.raison_ev.choices = [('','Selectionner')]+[(v,v) for v in liste_ev]
+	form.date_entree.data= datetime.now()
+	form.code_utilisateur.data= current_user.code
+	if request.method == 'GET':
+		if evenement != None:
+			form.code_site.data= evenement.code_site
+			form.entite_concerne.data= evenement.entite_concerne
+			form.status_ev.data= evenement.status_ev
+			form.date_ev.data= evenement.date_ev
+			form.raison_ev.data= evenement.raison_ev
+			form.date_rap.data= evenement.date_rap
+			form.pers_contact.data= evenement.pers_contact
+			form.remarques.data= evenement.remarques
+			form.date_entree.data= evenement.date_entree
+			form.code_utilisateur.data= evenement.code_utilisateur
+		else:
+			return 'Event not exists !'
+	if request.method == 'POST' and form.validate():
+		evenement.code_site = form.code_site.data
+		evenement.entite_concerne = form.entite_concerne.data
+		evenement.status_ev = form.status_ev.data
+		evenement.date_ev = form.date_ev.data
+		evenement.raison_ev = form.raison_ev.data
+		evenement.date_rap = form.date_rap.data
+		evenement.pers_contact = form.pers_contact.data
+		evenement.remarques = form.remarques.data
+		evenement.date_entree = form.date_entree.data
+		evenement.code_utilisateur = form.code_utilisateur.data
+		db.session.commit()
+		return redirect(url_for('list_events'))
+		
+	return render_template("event_edit.html",page_title=page_title,form=form)
+
 
 # Employe
 @app.route('/list_employes')
@@ -328,6 +369,7 @@ def add_user():
 			db.session.add(user)
 			db.session.commit()
 		flash('User addedd successfuly')
+		return redirect(url_for('list_users'))
 		
 	return render_template('user_add.html',page_title=page_title,form=form)
 

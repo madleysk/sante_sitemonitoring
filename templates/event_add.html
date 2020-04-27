@@ -3,66 +3,38 @@
 {% block body %}
 <section class="content">
 	<h4 class="text-center">{{ page_title }}</h4>
-	<form method="POST">	
-	<div class="row">
+	{% from "_formhelpers.html" import render_field %}
+	<form method=post>
+		<div class="row">
 		<div class="form-group col-md-6">
-			<label for="">Site</label>
-			<select name="code_site" class="form-control" required>
-				<option value="">Selectionner</option>
-				{% for site in liste_sites %}
-				<option value="{{site.code}}">{{site.nom}}</option>
-				{% endfor%}
-			</select>
+		{{ render_field(form.code_site,class='form-control',placeholder='Nom utilisateur') }}
 		</div>
 		<div class="form-group col-md-6">
-			<label for="">Element</label>
-			<select name="entite_concerne" class="form-control">
-				<option value="">Selectionner</option>
-				<option value="internet">Internet</option>
-				<option value="isante">Serveur isante</option>
-				<option value="fingerprint">Serveur Fingerprint</option>
-			</select>
+		{{ render_field(form.entite_concerne,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<label for="">Status Element</label>
-			<select name="status_ev" class="form-control">
-				<option value="">Selectionner</option>
-				<option value="up">Up</option>
-				<option value="down">Down</option>
-				<option value="none">N/A</option>
-			</select>
+		{{ render_field(form.status_ev,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<label for="">Raison</label>
-			<select name="src_ev" class="form-control">
-				<option value="">Selectionner</option>
-				{% for raison in liste_raisons %}
-				<option value="{{raison.id}}">{{raison.desc_ev}}</option>
-				{% endfor%}
-			</select>
+		{{ render_field(form.date_ev,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<label for="">Date evenement</label>
-			<input type="date" name="date_ev" class="form-control">
+		{{ render_field(form.raison_ev,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<label for="">Date Rapportage</label>
-			<input type="date" name="date_rap" class="form-control">
+		{{ render_field(form.date_rap,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<label for="">Rapporteur</label>
-			<input type="text" name="pers_contact" class="form-control" placeholder="Nom et prenom de la personne">
+		{{ render_field(form.pers_contact,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<label for="">Remarques</label>
-			<input type="text" name="remarques" class="form-control" placeholder="Autres remarques">
+		{{ render_field(form.remarques,class='form-control') }}
 		</div>
 		<div class="form-group col-md-6">
-			<button type="submit" class="btn btn-success">Ajouter</button>
+			<button type="submit" class="btn-sm btn-success">Ajouter</button>
 			<a href="{{ url_for('file_import') }}?ftype=Evenement" class="btn btn-primary btn-sm">Importer</a>
 		</div>
-	</div>
+		</div>
 	</form>
 </section>
 {% endblock body %}
-

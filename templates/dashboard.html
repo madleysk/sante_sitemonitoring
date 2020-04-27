@@ -101,16 +101,11 @@ font-weight: bold;
 	</div>
     </section>
     
-<!-- jQuery 3 -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-<!-- Bootstrap 4.4.1 JS compiled -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 <!-- ChartJS -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
-<!-- FastClick -->
-<script src="https://cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js"></script>
 <!-- page script -->
 <script>
+document.addEventListener('DOMContentLoaded', function(){
 	//Filter script
 	function filter(obj){
 		var current_url= "{{url_for('index')}}";
@@ -189,6 +184,7 @@ font-weight: bold;
 	});
 
   })
+});
 </script>
 
 {% endblock body %}
