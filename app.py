@@ -4,7 +4,7 @@ from models import *
 from forms import *
 from auth import *
 from authentication import auth
-from datetime import datetime
+from datetime import date,datetime
 import csv
 from werkzeug.utils import secure_filename
 
@@ -15,8 +15,8 @@ app.register_blueprint(auth)
 app.secret_key = b'_9#y6K"G4Q0c\n\xec]/'
 DATABASE_URL='mysql://admin:MyPassw0rd#1@localhost/sante_sm_db' #Mysql database
 SQLite_URL = 'sqlite:///database/mydb.db' # Sqlite Database
-UPLOAD_PATH='/home/madleysk/sante_sitemonitoring/uploaded/'
-app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+UPLOAD_PATH='uploaded/'
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLite_URL
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config['UPLOAD_FOLDER']=UPLOAD_PATH
 db.init_app(app)
@@ -30,7 +30,6 @@ PER_PAGE= 20
 @app.route('/')
 def index():
 	page_title = 'Dashboard'
-	#db.drop_all()
 	#initDb()
 	#import_csv_ev("liste_sites.csv",'Site')
 	#import_csv_ev("complete_event_list.csv",'Evenement')
@@ -41,13 +40,13 @@ def index():
 		data['isante_status'] = {"up":Site.query.filter_by(isante ='up',region=filtre).count(),"down":Site.query.filter_by(isante = 'down').count()}
 		data['fingerprint_status'] = {"up":Site.query.filter_by(fingerprint ='up',region=filtre).count(),"down":Site.query.filter_by(fingerprint = 'down').count()}
 		data['recent_events'] = Evenement.query.join(Site, Evenement.code_site==Site.code)\
-		.filter_by(region=filtre)\
+		.filter_by(region=filtre.upper())\
 		.add_columns(Evenement.entite_concerne.label('element'),Evenement.status_ev,Evenement.date_rap,Site.nom)\
 		.order_by(Evenement.date_rap.desc()).limit(5)
 		data['top_bad_sites'] = db.session.query( Evenement.code_site.label('code_site'),func.count(Evenement.code_site).label('qte'), Site.nom.label('nom_site'))\
 		.filter_by(status_ev='down')\
 		.join(Site, Evenement.code_site==Site.code)\
-		.filter_by(region=filtre)\
+		.filter_by(region=filtre.upper())\
 		.group_by(Evenement.code_site).limit(5)
 	else:
 		data['internet_status'] = {"up":Site.query.filter_by(internet ='up').count(),"down":Site.query.filter_by(internet = 'down').count()}
@@ -211,6 +210,7 @@ def add_event():
 		elif entite_concerne == 'fingerprint':
 			site.fingerprint = status_ev
 			db.session.commit()
+		return redirect(url_for('list_events'))
 	return render_template("event_new.html",page_title=page_title,form=form)
 
 @app.route('/list_events')
@@ -329,12 +329,12 @@ def list_users(page=1):
 	keyword= request.args.get('search')
 	if keyword == None:
 		liste_users = Users.query.join(Role, Users.auth_level==Role.auth_level)\
-		.add_columns(Users.code,Users.username,Users.created_on,Users.modified_on,Role.role_desc.label('role'))\
+		.add_columns(Users.id,Users.code,Users.username,Users.created_on,Users.modified_on,Role.role_desc.label('role'))\
 		.order_by(Users.username.asc()).paginate(page,PER_PAGE)
 	else:
 		keyword = "%"+keyword+"%"
 		liste_users = Users.query.join(Role, Users.auth_level==Role.auth_level)\
-		.add_columns(Users.code,Users.username,Users.created_on,Users.modified_on,Role.role_desc.label('role'))\
+		.add_columns(Users.id,Users.code,Users.username,Users.created_on,Users.modified_on,Role.role_desc.label('role'))\
 		.filter(Users.username.like(keyword))\
 		.order_by(Users.username.asc()).paginate(page,PER_PAGE)
 
@@ -372,6 +372,36 @@ def add_user():
 		return redirect(url_for('list_users'))
 		
 	return render_template('user_add.html',page_title=page_title,form=form)
+
+@app.route('/edit_user/<int:id_user>', methods=['GET','POST'])
+@login_required
+def edit_user(id_user):
+	page_title = 'Modifier utilisateur'
+	if current_user.auth_level == 9:
+		user = Users.query.get(id_user)
+		user_roles = Role.query.all()
+		form = RegistrationForm(request.form)
+		if request.method == 'GET':
+			if user is not None:
+				form.username.data = user.username
+				form.code.data = user.code
+				form.auth_level.data = user.auth_level
+			else:
+				message='User not valid !'
+				return render_template('error.html',page_title=page_title,message=message)
+			
+		if request.method == 'POST' and form.validate():
+			user.username = form.username
+			user.auth_level = form.auth_level
+			if form.passwd.data != '':
+				user.passwd = pass_hashing(form.passwd)
+			db.session.commit()
+			return redirect(url_for('users_list'))
+	else:
+		message='User not authorized !'
+		return render_template('error.html',message=message)
+	return render_template('user_edit.html',page_title=page_title,user_roles=user_roles,form=form)
+	
 
 @app.route('/file_import', methods=['GET','POST'])
 @login_required
@@ -449,7 +479,7 @@ def import_csv_ev(fichier,nom_classe):
 		# importing csv file
 		if nom_classe == 'Evenement':
 			for evenement in lignes_contenu:
-				date_entree= datetime.now()
+				date_entree= datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 				code_utilisateur= current_user.code
 				#date_ev=evenement[4]
 				#date_rap=evenement[6]

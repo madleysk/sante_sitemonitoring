@@ -20,5 +20,3 @@ BEGIN
 	ELSEIF (NEW.entite_concerne = 'fingerprint') THEN UPDATE sites SET fingerprint= NEW.status_ev WHERE NEW.code_site = sites.code;
 	END IF;
 END;
-
-

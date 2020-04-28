@@ -20,8 +20,8 @@ class Site(db.Model):
 	region = db.Column(db.String(20),nullable=False)
 	departement = db.Column(db.String(30),nullable=False)
 	commune = db.Column(db.String(30),nullable=False)
-	adresse = db.Column(db.String(160))
-	pepfar = db.Column(db.String(5))
+	adresse = db.Column(db.String(160),nullable=True)
+	pepfar = db.Column(db.String(5), default='oui')
 	contact_1 = db.Column(db.String(100))
 	tel_1 = db.Column(db.String(15))
 	contact_2 = db.Column(db.String(100))
@@ -75,8 +75,8 @@ class Employe(db.Model):
 	__tablename__ = "employes"
 	id = db.Column(db.Integer, primary_key=True)
 	code_emp = db.Column(db.String(10),unique=True,nullable=False)
-	nom = db.Column(db.String(160))
-	prenom = db.Column(db.String(160))
+	nom = db.Column(db.String(160),nullable=False)
+	prenom = db.Column(db.String(160),nullable=False)
 	email = db.Column(db.String(200),unique=True,nullable=False)
 	poste = db.Column(db.Integer,db.ForeignKey("postes.id"),nullable=False)
 	adresse = db.Column(db.String(160))
@@ -158,11 +158,11 @@ class Evenement(db.Model):
 	entite_concerne = db.Column(db.String(15),nullable = False) # internet, isante or fingerprint
 	status_ev = db.Column(db.String(10),nullable = False) # up, down, none
 	raison_ev = db.Column(db.String(100))
-	date_ev = db.Column(db.DateTime,nullable = False)
+	date_ev = db.Column(db.DateTime,nullable = True)
 	date_rap = db.Column(db.DateTime,nullable = False)
 	date_entree = db.Column(db.DateTime,nullable = False, default=datetime.utcnow)
 	pers_contact = db.Column(db.String(100),nullable = False)
-	remarques = db.Column(db.String(100),nullable = False)
+	remarques = db.Column(db.String(100),nullable = True)
 	code_utilisateur = db.Column(db.String(10),db.ForeignKey("users.code"),nullable = False)
 
 	def __init__(self,code_site,entite_concerne,status_ev,date_ev,raison_ev,date_rap,pers_contact,remarques,date_entree,code_utilisateur):
@@ -179,13 +179,14 @@ class Evenement(db.Model):
 
 def initDb():
 	"""Database initializer"""
+	db.drop_all()
 	# creating database tables
 	db.create_all()
 	# adding database triggers
-	with open("database/triggers.sql","r") as triggers_file:
+	"""with open("database/triggers-sqlite.sql","r") as triggers_file:
 		triggers = triggers_file.read()
-		db.engine.execute(triggers)
-		db.session.commit()
+		db.engine.execute(triggers)"""
+	#	db.session.commit()
 	# Initializing database tables
 	# table Source_ev
 	liste_ev = ['N/A','Probleme FAI','Probleme Interne','Probleme non identifie','Source non identifie']

@@ -64,7 +64,7 @@ font-weight: bold;
 	<div class="row mt-3 mb-3">
 		<div class="col-md-8">
 			<div class="card">
-				<div class="card-title bg-danger"><h4 class="text-center" style="color:white;">Evenements recents</h4></div>
+				<div class="card-title bg-danger mb-0"><h4 class="text-center" style="color:white;">Evenements recents</h4></div>
 				<div class="card-body p-0 table-responsive">
 					<table class="table table-striped table-hover">
 						<th>Status</th><th>Site</th><th>date rapporte</th>
@@ -77,7 +77,7 @@ font-weight: bold;
 		</div>
 		<div class="col-md-4">
 			<div class="card">
-				<div class="card-title bg-danger"><h4 class="text-center" style="color:white;">Top 5 sites a problemes</h4></div>
+				<div class="card-title bg-danger mb-0"><h4 class="text-center" style="color:white;">Top 5 sites a problemes</h4></div>
 				<div class="card-body p-0 table-responsive">
 					<table class="table table-striped table-hover">
 						<th class="text-center">Nom site</th>
@@ -91,11 +91,11 @@ font-weight: bold;
 	</div>
 	<div class="row">
 		<div class="col-md-3" style="margin:auto;">
-			<select name="filter" class="form-control" onchange="filter(this)">
+			<select name="filter" id="filter" class="form-control" >
 				<option value="all" {% if filtre == 'all'%} selected {% endif %}>-- Filtrage --</option>
-				<option value="CENTRE" {% if filtre == 'CENTRE'%} selected {% endif %}>Region Centre</option>
-				<option value="NORD" {% if filtre == 'NORD'%} selected {% endif %}>Region Nord</option>
-				<option value="SUD" {% if filtre == 'SUD'%} selected {% endif %}>Region Sud</option>
+				<option value="centre" {% if filtre == 'centre'%} selected {% endif %}>Region Centre</option>
+				<option value="nord" {% if filtre == 'nord'%} selected {% endif %}>Region Nord</option>
+				<option value="sud" {% if filtre == 'sud'%} selected {% endif %}>Region Sud</option>
 			</select>
 		</div>
 	</div>
@@ -107,11 +107,12 @@ font-weight: bold;
 <script>
 document.addEventListener('DOMContentLoaded', function(){
 	//Filter script
-	function filter(obj){
+	document.getElementById("filter").onchange= function(){
 		var current_url= "{{url_for('index')}}";
-		var val= obj.value;
+		var val= this.value;
 		window.location.replace(current_url+'?filter='+val);
-	}
+		};
+		
 	//Chart script
   $(function () {
     /* ChartJS
